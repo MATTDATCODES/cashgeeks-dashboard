@@ -114,6 +114,14 @@
   .step-next { color: #8b949e; font-size: 11px; }
   .step-next-action { color: #58a6ff; font-size: 11px; font-weight: 500; }
 
+  .prep-checklist { display: flex; flex-wrap: wrap; gap: 4px 8px; margin-top: 4px; }
+  .prep-item { font-size: 10px; padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-flex; align-items: center; gap: 3px; }
+  .prep-done { background: #1f3a2e; color: #3fb950; }
+  .prep-pending { background: #21262d; color: #484f58; }
+  .prep-active { background: #2d2a0f; color: #d29922; font-weight: 600; }
+  .prep-note { font-size: 10px; color: #d29922; font-style: italic; margin-top: 2px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .prep-header { font-size: 10px; font-weight: 700; color: #d29922; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+
   .loading { text-align: center; padding: 60px 20px; color: #8b949e; }
   .loading .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid #30363d; border-top-color: #58a6ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -463,6 +471,52 @@ function renderNextAction(row, pipeline, actions) {
   return '<span class="step-next-action">' + (actions[state.currentStep.name] || '') + '</span>';
 }
 
+
+// === PROPERTY PREP CHECKLIST (Post-Purchase / Pre-Marketing) ===
+const PREP_STEPS = [
+  { name: 'Schedule Work', col: 31, type: 'text' },
+  { name: 'Needs Work?', col: 41, type: 'check' },
+  { name: 'Staging', col: 42, type: 'check' },
+  { name: 'Grass Cut', col: 43, type: 'check' },
+  { name: 'LB Code', col: 44, type: 'text' },
+  { name: 'Power/Water', col: 45, type: 'check' },
+  { name: 'Photos', col: 46, type: 'text' },
+  { name: 'Send to Marketing', col: 47, type: 'check' }
+];
+
+function isInPrepPhase(row) {
+  // Property is in prep phase if Executed HUD is done but not yet fully marketed
+  const exHud = (row[18] || '').trim().toUpperCase();
+  const hudDone = exHud === 'TRUE' || exHud === 'YES';
+  return hudDone;
+}
+
+function renderPrepChecklist(row) {
+  if (!isInPrepPhase(row)) return '';
+  let html = '<div><div class="prep-header">🏠 Property Prep</div><div class="prep-checklist">';
+  for (const step of PREP_STEPS) {
+    const val = (row[step.col] || '').trim();
+    const upper = val.toUpperCase();
+    if (step.type === 'check') {
+      const done = upper === 'TRUE' || upper === 'YES';
+      const cls = done ? 'prep-done' : 'prep-pending';
+      html += '<span class="prep-item ' + cls + '">' + (done ? '✓' : '✗') + ' ' + step.name + '</span>';
+    } else {
+      const hasVal = val !== '' && upper !== 'FALSE' && upper !== 'NO';
+      const cls = hasVal ? 'prep-active' : 'prep-pending';
+      html += '<span class="prep-item ' + cls + '">' + (hasVal ? '✓' : '✗') + ' ' + step.name + '</span>';
+    }
+  }
+  html += '</div>';
+  // Show schedule work note if present
+  const schedNote = (row[31] || '').trim();
+  if (schedNote && schedNote.toUpperCase() !== 'FALSE' && schedNote.toUpperCase() !== 'TRUE') {
+    html += '<div class="prep-note">📋 ' + schedNote + '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
 // === RENDER PURCHASES ===
 function renderPurchases() {
   const container = document.getElementById('tab-purchases');
@@ -505,7 +559,7 @@ function renderPurchases() {
     html += `<td>${r[30] || '—'}</td>`;
     html += `<td>${renderPipelineBar(r, AB_PIPELINE)}</td>`;
     html += `<td>${renderCurrentStep(r, AB_PIPELINE, AB_NEXT_ACTIONS)}</td>`;
-    html += `<td>${renderNextAction(r, AB_PIPELINE, AB_NEXT_ACTIONS)}</td>`;
+    html += `<td>${renderNextAction(r, AB_PIPELINE, AB_NEXT_ACTIONS)}${renderPrepChecklist(r)}</td>`;
     html += '</tr>';
   }
   html += '</tbody></table></div>';
