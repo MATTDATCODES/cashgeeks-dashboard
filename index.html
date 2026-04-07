@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CashGeeks TC Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð°</text></svg>">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e1e4e8; min-height: 100vh; }
+
+  .header { background: linear-gradient(135deg, #1a1f2e 0%, #0f1117 100%); border-bottom: 1px solid #2d333b; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+  .header h1 { font-size: 22px; font-weight: 700; color: #58a6ff; display: flex; align-items: center; gap: 10px; }
+  .header h1 .logo { font-size: 26px; }
+  .header .subtitle { color: #8b949e; font-size: 13px; margin-top: 2px; }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .last-updated { color: #8b949e; font-size: 12px; }
+  .auto-refresh-label { color: #8b949e; font-size: 11px; display: flex; align-items: center; gap: 4px; }
+  .auto-refresh-label input { accent-color: #238636; }
+  .refresh-btn { background: #238636; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.2s; }
+  .refresh-btn:hover { background: #2ea043; }
+  .refresh-btn:active { transform: scale(0.97); }
+  .refresh-btn.loading { opacity: 0.6; pointer-events: none; }
+
+  .stats-bar { display: flex; gap: 12px; padding: 16px 32px; background: #161b22; border-bottom: 1px solid #2d333b; flex-wrap: wrap; }
+  .stat-card { background: #1c2128; border: 1px solid #2d333b; border-radius: 8px; padding: 12px 20px; min-width: 130px; flex: 1; max-width: 180px; transition: border-color 0.2s; cursor: default; }
+  .stat-card:hover { border-color: #484f58; }
+  .stat-card .label { font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-card .value { font-size: 24px; font-weight: 700; margin-top: 4px; }
+  .stat-card .value.green { color: #3fb950; }
+  .stat-card .value.yellow { color: #d29922; }
+  .stat-card .value.red { color: #f85149; }
+  .stat-card .value.blue { color: #58a6ff; }
+
+  .tabs { display: flex; gap: 0; padding: 0 32px; background: #161b22; border-bottom: 1px solid #2d333b; }
+  .tab { padding: 12px 24px; cursor: pointer; font-size: 13px; font-weight: 600; color: #8b949e; border-bottom: 2px solid transparent; transition: all 0.2s; user-select: none; }
+  .tab:hover { color: #e1e4e8; background: rgba(255,255,255,0.02); }
+  .tab.active { color: #58a6ff; border-bottom-color: #58a6ff; }
+  .tab .tab-count { background: #30363d; color: #8b949e; font-size: 10px; padding: 1px 6px; border-radius: 10px; margin-left: 6px; }
+
+  .filter-bar { display: flex; gap: 8px; padding: 12px 32px; background: #0f1117; flex-wrap: wrap; align-items: center; border-bottom: 1px solid #1c2128; }
+  .filter-btn { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.15s; }
+  .filter-btn:hover { background: #30363d; }
+  .filter-btn.active { background: #1f6feb; border-color: #1f6feb; color: #fff; }
+  .search-input { background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; padding: 6px 12px; border-radius: 6px; font-size: 12px; width: 220px; outline: none; transition: border-color 0.2s; }
+  .search-input:focus { border-color: #58a6ff; }
+  .search-input::placeholder { color: #484f58; }
+
+  .content { padding: 20px 32px; }
+  .section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #c9d1d9; display: flex; align-items: center; gap: 8px; }
+  .section-title .count { background: #30363d; color: #8b949e; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+
+  .table-wrapper { overflow-x: auto; margin-bottom: 32px; border-radius: 8px; border: 1px solid #2d333b; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { background: #1c2128; color: #8b949e; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; padding: 10px 12px; text-align: left; white-space: nowrap; border-bottom: 1px solid #2d333b; position: sticky; top: 0; z-index: 2; }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid #1c2128; vertical-align: top; }
+  tbody tr { background: #0d1117; transition: background 0.15s; }
+  tbody tr:hover { background: #161b22; }
+
+  .sb { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .s-uc { background: #1f3a2e; color: #3fb950; }
+  .s-pm { background: #2d2a0f; color: #d29922; }
+  .s-mk { background: #2a1f3a; color: #bc8cff; }
+  .s-ucs { background: #1a2a4a; color: #58a6ff; }
+  .s-cw { background: #2d2a0f; color: #d29922; }
+  .s-cgo { background: #1f3a2e; color: #3fb950; }
+  .s-ws { background: #2a2a1f; color: #e3b341; }
+  .s-dc { background: #1a2a4a; color: #58a6ff; }
+  .s-mls { background: #2a1f3a; color: #bc8cff; }
+  .s-ss { background: #1f3a2e; color: #3fb950; }
+  .s-cp { background: #1c2128; color: #8b949e; }
+  .s-ft { background: #3b1f1f; color: #f85149; }
+  .s-lb { background: #3b2f1f; color: #d29922; }
+  .s-jv { background: #1a2a4a; color: #58a6ff; }
+  .s-ucp { background: #2a1f2a; color: #d2a8ff; }
+
+  .ck { color: #3fb950; font-weight: bold; }
+  .un { color: #484f58; }
+  .wr { color: #d29922; font-weight: bold; }
+  .fu { max-width: 300px; font-size: 12px; line-height: 1.4; color: #c9d1d9; }
+  .pl { color: #58a6ff; font-weight: 600; white-space: nowrap; }
+  .tc { color: #8b949e; font-size: 12px; }
+  .ci { font-size: 11px; color: #8b949e; max-width: 200px; }
+  .mn { font-family: 'SF Mono', Consolas, monospace; color: #3fb950; white-space: nowrap; }
+  .do { color: #f85149; font-weight: 700; }
+  .ds { color: #d29922; font-weight: 600; }
+  .dok { color: #8b949e; }
+
+  .ph { border-left: 3px solid #f85149; }
+  .pmd { border-left: 3px solid #d29922; }
+
+  .loading { text-align: center; padding: 60px 20px; color: #8b949e; }
+  .loading .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid #30363d; border-top-color: #58a6ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error { text-align: center; padding: 60px 20px; color: #f85149; }
+  .error a { color: #58a6ff; }
+  .error .steps { text-align: left; max-width: 500px; margin: 20px auto; color: #c9d1d9; font-size: 13px; line-height: 1.8; }
+  .error .steps li { margin-bottom: 4px; }
+
+  .toast { position: fixed; bottom: 24px; right: 24px; background: #1c2128; border: 1px solid #2d333b; color: #c9d1d9; padding: 12px 20px; border-radius: 8px; font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 100; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-left: 3px solid #3fb950; }
+
+  .empty-state { text-align: center; padding: 40px 20px; color: #484f58; font-size: 14px; }
+
+  @media (max-width: 768px) {
+    .header { padding: 16px; flex-direction: column; gap: 12px; align-items: flex-start; }
+    .stats-bar { padding: 12px 16px; gap: 8px; }
+    .stat-card { min-width: 100px; padding: 10px 14px; }
+    .stat-card .value { font-size: 20px; }
+    .filter-bar { padding: 10px 16px; }
+    .search-input { width: 100%; }
+    .content { padding: 16px; }
+    .tabs { padding: 0 16px; }
+    .tab { padding: 10px 14px; font-size: 12px; }
+  }
+
+  @media print {
+    body { background: #fff; color: #000; }
+    .header { background: #fff; border-bottom: 2px solid #000; }
+    .header h1 { color: #000; }
+    .refresh-btn, .auto-refresh-label, .filter-bar { display: none !important; }
+    .stats-bar { background: #fff; }
+    .stat-card { background: #f5f5f5; border-color: #ccc; }
+    .stat-card .label { color: #666; }
+    .stat-card .value { color: #000 !important; }
+    tbody tr { background: #fff; }
+    thead th { background: #f0f0f0; color: #333; }
+    .sb { border: 1px solid #ccc; }
+    .content { padding: 10px; }
+    .table-wrapper { border-color: #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1><span class="logo">CG</span> CashGeeks TC Dashboard</h1>
+    <div class="subtitle">Regency Litho Assets LLC â Live Transaction Tracker</div>
+  </div>
+  <div class="header-right">
+    <label class="auto-refresh-label">
+      <input type="checkbox" id="autoRefresh" checked onchange="toggleAutoRefresh()"> Auto-refresh (5 min)
+    </label>
+    <span class="last-updated" id="lastUpdated">Loading...</span>
+    <button class="refresh-btn" id="refreshBtn" onclick="loadAllData()">Refresh</button>
+  </div>
+</div>
+
+<div class="stats-bar" id="statsBar">
+  <div class="stat-card"><div class="label">Total Active</div><div class="value blue" id="statActive">â</div></div>
+  <div class="stat-card"><div class="label">Under Contract</div><div class="value green" id="statUC">â</div></div>
+  <div class="stat-card"><div class="label">Pre-Marketing</div><div class="value yellow" id="statPM">â</div></div>
+  <div class="stat-card"><div class="label">Closing This Week</div><div class="value red" id="statUrgent">â</div></div>
+  <div class="stat-card"><div class="label">Completed</div><div class="value" style="color:#8b949e" id="statDone">â</div></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('purchases', this)">Purchases (A-B) <span class="tab-count" id="countPurchases">0</span></div>
+  <div class="tab" onclick="showTab('sales', this)">Sales / Transactions (B-C) <span class="tab-count" id="countSales">0</span></div>
+</div>
+
+<div class="filter-bar">
+  <input type="text" class="search-input" id="searchBox" placeholder="Search properties, buyers, title..." oninput="doFilter()">
+  <button class="filter-btn active" data-f="all" onclick="setFilter('all',this)">All Active</button>
+  <button class="filter-btn" data-f="under contract" onclick="setFilter('under contract',this)">Under Contract</button>
+  <button class="filter-btn" data-f="pre-marketing" onclick="setFilter('pre-marketing',this)">Pre-Marketing</button>
+  <button class="filter-btn" data-f="marketing" onclick="setFilter('marketing',this)">Marketing</button>
+  <button class="filter-btn" data-f="co-wholesale" onclick="setFilter('co-wholesale',this)">Co-Wholesale</button>
+  <button class="filter-btn" data-f="cash geeks" onclick="setFilter('cash geeks',this)">CG Owned</button>
+  <button class="filter-btn" data-f="complete" onclick="setFilter('complete',this)">Completed</button>
+</div>
+
+<div class="content">
+  <div id="tab-purchases">
+    <div class="loading" id="loadingPurchases"><div class="spinner"></div><br>Loading Purchases data...</div>
+  </div>
+  <div id="tab-sales" style="display:none;">
+    <div class="loading" id="loadingSales"><div class="spinner"></div><br>Loading Sales data...</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// === CONFIG ===
+const SHEETS = {
+  purchases: {
+    id: '1EFmLH_5Y-BNQ5kc05zb2fg7gmvl5iya1a43NR48Xu_4',
+    gid: '0'
+  },
+  sales: {
+    id: '10RbZNdVA07G5HPKbfMpce8RF4WDJu8BhSyjZk5kbHpY',
+    gid: '1484254259'
+  }
+};
+
+let purchaseData = [];
+let salesData = [];
+let currentFilter = 'all';
+let currentTab = 'purchases';
+let autoRefreshTimer = null;
+
+// === CSV PARSER ===
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let field = '';
+  let inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"' && text[i+1] === '"') { field += '"'; i++; }
+      else if (c === '"') { inQuotes = false; }
+      else { field += c; }
+    } else {
+      if (c === '"') { inQuotes = true; }
+      else if (c === ',') { row.push(field.trim()); field = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i+1] === '\n') i++;
+        row.push(field.trim());
+        if (row.some(f => f !== '')) rows.push(row);
+        row = []; field = '';
+      } else { field += c; }
+    }
+  }
+  if (field || row.length) { row.push(field.trim()); if (row.some(f => f !== '')) rows.push(row); }
+  return rows;
+}
+
+// === FETCH ===
+async function fetchSheet(sheetId, gid) {
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  return await resp.text();
+}
+
+// === STATUS HELPERS ===
+const ACTIVE_STATUSES = ['under contract','under contract probate','pre-marketing','marketing','under contract to sell','co-wholesale','cash geeks owned','cash geeks purchase','wholesale','double close','mls purchase - ab','mls purchase - bc','straight sell','limbo','jv buy - closed','purchased/rental'];
+const INACTIVE_STATUSES = ['complete','fell through'];
+
+function ns(s) { return (s || '').toLowerCase().trim(); }
+function isDataRow(status) { const s = ns(status); return ACTIVE_STATUSES.includes(s) || INACTIVE_STATUSES.includes(s); }
+function isActive(s) { return ACTIVE_STATUSES.includes(ns(s)); }
+
+function statusBadge(status) {
+  const s = ns(status);
+  let cls = 's-uc';
+  if (s === 'pre-marketing') cls = 's-pm';
+  else if (s === 'marketing') cls = 's-mk';
+  else if (s.includes('under contract to sell')) cls = 's-ucs';
+  else if (s.includes('under contract') && s.includes('probate')) cls = 's-ucp';
+  else if (s.includes('co-wholesale')) cls = 's-cw';
+  else if (s.includes('cash geeks')) cls = 's-cgo';
+  else if (s === 'wholesale') cls = 's-ws';
+  else if (s === 'double close') cls = 's-dc';
+  else if (s.includes('mls purchase')) cls = 's-mls';
+  else if (s === 'straight sell') cls = 's-ss';
+  else if (s === 'complete') cls = 's-cp';
+  else if (s === 'fell through') cls = 's-ft';
+  else if (s === 'limbo') cls = 's-lb';
+  else if (s.includes('jv')) cls = 's-jv';
+  else if (s === 'purchased/rental') cls = 's-cgo';
+  return `<span class="sb ${cls}">${status}</span>`;
+}
+
+function chk(val) {
+  const v = (val || '').toUpperCase().trim();
+  if (v === 'TRUE' || v === 'YES') return '<span class="ck">&#10003;</span>';
+  if (v === 'FALSE' || v === 'NO' || v === '') return '<span class="un">&#10007;</span>';
+  return `<span class="wr">${val}</span>`;
+}
+
+function dlClass(dateStr) {
+  if (!dateStr) return 'dok';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const parts = dateStr.split('/');
+  if (parts.length < 2) return 'dok';
+  const m = parseInt(parts[0]) - 1, d = parseInt(parts[1]);
+  let y = parts[2] ? parseInt(parts[2]) : today.getFullYear();
+  if (y < 100) y += 2000;
+  const dt = new Date(y, m, d);
+  const diff = (dt - today) / 86400000;
+  if (diff < 0) return 'do';
+  if (diff <= 7) return 'ds';
+  return 'dok';
+}
+
+function prClass(dateStr) {
+  const dc = dlClass(dateStr);
+  if (dc === 'do') return 'ph';
+  if (dc === 'ds') return 'pmd';
+  return '';
+}
+
+function countClosingThisWeek() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const weekEnd = new Date(today); weekEnd.setDate(weekEnd.getDate() + 7);
+  let count = 0;
+  function checkDate(dateStr) {
+    if (!dateStr) return;
+    const parts = dateStr.split('/');
+    if (parts.length < 2) return;
+    let y = parts[2] ? parseInt(parts[2]) : today.getFullYear();
+    if (y < 100) y += 2000;
+    const dt = new Date(y, parseInt(parts[0]) - 1, parseInt(parts[1]));
+    if (dt >= today && dt <= weekEnd) count++;
+  }
+  purchaseData.filter(r => isActive(r[0])).forEach(r => checkDate(r[22]));
+  salesData.filter(r => isActive(r[0])).forEach(r => checkDate(r[9]));
+  return count;
+}
+
+// === RENDER PURCHASES ===
+function renderPurchases() {
+  const container = document.getElementById('tab-purchases');
+  const rows = purchaseData.filter(r => isDataRow(r[0]) && (currentFilter === 'all' ? isActive(r[0]) : true));
+  const filtered = filterRows(rows, 0);
+  document.getElementById('countPurchases').textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty-state">No matching properties found.</div>';
+    return;
+  }
+
+  let html = `<div class="section-title">A-B Purchase Side <span class="count">${filtered.length} properties</span></div>`;
+  html += '<div class="table-wrapper"><table><thead><tr>';
+  html += '<th>Status</th><th>Property</th><th>Title Co</th><th>Follow Up</th><th>Seller Contact</th>';
+  html += '<th>Price</th><th>Binder</th><th>Close</th><th>Est Close</th>';
+  html += '<th>EMD</th><th>Title</th><th>Muni</th><th>HUD</th><th>Cash to Close</th>';
+  html += '</tr></thead><tbody>';
+
+  for (const r of filtered) {
+    const pc = prClass(r[22]);
+    html += `<tr class="${pc}">`;
+    html += `<td>${statusBadge(r[0])}</td>`;
+    html += `<td class="pl">${r[1] || ''}</td>`;
+    html += `<td class="tc">${r[2] || ''}</td>`;
+    html += `<td class="fu">${r[3] || ''}</td>`;
+    html += `<td class="ci">${(r[4] || '').replace(/\n/g, '<br>')}</td>`;
+    html += `<td class="mn">${r[8] ? '$' + Number(r[8].replace(/[$,]/g, '')).toLocaleString() : 'â'}</td>`;
+    html += `<td class="mn">${r[10] ? '$' + Number(r[10].replace(/[$,]/g, '')).toLocaleString() : 'â'}</td>`;
+    html += `<td class="${dlClass(r[21])}">${r[21] || 'â'}</td>`;
+    html += `<td class="${dlClass(r[22])}">${r[22] || 'â'}</td>`;
+    html += `<td>${chk(r[13])}</td><td>${chk(r[14])}</td><td>${chk(r[15])}</td><td>${chk(r[17])}</td>`;
+    html += `<td>${r[29] || 'â'}</td>`;
+    html += '</tr>';
+  }
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+}
+
+// === RENDER SALES ===
+function renderSales() {
+  const container = document.getElementById('tab-sales');
+  const rows = salesData.filter(r => isDataRow(r[0]) && (currentFilter === 'all' ? isActive(r[0]) : true));
+  const filtered = filterRows(rows, 0);
+  document.getElementById('countSales').textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty-state">No matching properties found.</div>';
+    return;
+  }
+
+  let html = `<div class="section-title">B-C Sales / Transactions <span class="count">${filtered.length} properties</span></div>`;
+  html += '<div class="table-wrapper"><table><thead><tr>';
+  html += '<th>Status</th><th>Property</th><th>Title</th><th>Follow Up</th><th>Buyer</th>';
+  html += '<th>CC</th><th>Est Close</th><th>Buyer Intro</th><th>Seller Intro</th><th>Title Intro</th>';
+  html += '<th>Lender</th><th>Funding</th><th>EMD</th><th>IPR</th><th>Title</th><th>Muni</th>';
+  html += '</tr></thead><tbody>';
+
+  for (const r of filtered) {
+    const pc = prClass(r[9]);
+    const followUp = [r[5], r[6]].filter(Boolean).join(' â ');
+    html += `<tr class="${pc}">`;
+    html += `<td>${statusBadge(r[0])}</td>`;
+    html += `<td class="pl">${r[1] || ''}</td>`;
+    html += `<td class="tc">${r[3] || ''}</td>`;
+    html += `<td class="fu">${followUp || r[2] || ''}</td>`;
+    html += `<td class="ci">${(r[4] || '').replace(/\n/g, '<br>')}</td>`;
+    html += `<td class="${dlClass(r[8])}">${r[8] || 'â'}</td>`;
+    html += `<td class="${dlClass(r[9])}">${r[9] || 'â'}</td>`;
+    html += `<td>${chk(r[10])}</td><td>${chk(r[11])}</td><td>${chk(r[12])}</td>`;
+    html += `<td class="tc">${r[17] || 'â'}</td>`;
+    html += `<td class="tc">${r[20] || 'â'}</td>`;
+    html += `<td>${chk(r[24])}</td><td>${chk(r[26])}</td><td>${chk(r[27])}</td><td>${chk(r[28])}</td>`;
+    html += '</tr>';
+  }
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+}
+
+// === FILTER ===
+function filterRows(rows, statusCol) {
+  let f = rows;
+  if (currentFilter !== 'all' && currentFilter !== 'complete') {
+    f = rows.filter(r => ns(r[statusCol]).includes(currentFilter));
+  } else if (currentFilter === 'complete') {
+    f = rows.filter(r => ns(r[statusCol]) === 'complete' || ns(r[statusCol]) === 'fell through');
+  }
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  if (q) f = f.filter(r => r.join(' ').toLowerCase().includes(q));
+  return f;
+}
+
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function doFilter() { render(); }
+
+function showTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-purchases').style.display = tab === 'purchases' ? 'block' : 'none';
+  document.getElementById('tab-sales').style.display = tab === 'sales' ? 'block' : 'none';
+}
+
+function render() { renderPurchases(); renderSales(); }
+
+// === STATS ===
+function updateStats() {
+  const allP = purchaseData.filter(r => isDataRow(r[0]) && isActive(r[0]));
+  const allS = salesData.filter(r => isDataRow(r[0]) && isActive(r[0]));
+  document.getElementById('statActive').textContent = allP.length + allS.length;
+  document.getElementById('statUC').textContent = allP.filter(r => ns(r[0]).includes('under contract')).length;
+  document.getElementById('statPM').textContent = allP.filter(r => ns(r[0]) === 'pre-marketing').length;
+  document.getElementById('statUrgent').textContent = countClosingThisWeek();
+  document.getElementById('statDone').textContent = purchaseData.filter(r => ns(r[0]) === 'complete').length + salesData.filter(r => ns(r[0]) === 'complete').length;
+}
+
+// === TOAST ===
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast success show';
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// === AUTO REFRESH ===
+function toggleAutoRefresh() {
+  if (document.getElementById('autoRefresh').checked) {
+    startAutoRefresh();
+  } else {
+    if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
+  }
+}
+
+function startAutoRefresh() {
+  if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+  autoRefreshTimer = setInterval(() => {
+    loadAllData(true);
+  }, 5 * 60 * 1000);
+}
+
+// === MAIN LOAD ===
+async function loadAllData(silent) {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('loading');
+  btn.textContent = 'Loading...';
+  if (!silent) document.getElementById('lastUpdated').textContent = 'Refreshing...';
+
+  try {
+    const [pCSV, sCSV] = await Promise.all([
+      fetchSheet(SHEETS.purchases.id, SHEETS.purchases.gid),
+      fetchSheet(SHEETS.sales.id, SHEETS.sales.gid)
+    ]);
+
+    const pRows = parseCSV(pCSV);
+    const sRows = parseCSV(sCSV);
+
+    purchaseData = pRows.slice(2);
+    salesData = sRows.slice(2);
+
+    render();
+    updateStats();
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('lastUpdated').textContent = `Live \u2014 ${timeStr}`;
+    if (silent) showToast('Dashboard refreshed');
+
+  } catch (err) {
+    const msg = err.message || String(err);
+    document.getElementById('tab-purchases').innerHTML = `
+      <div class="error">
+        <div style="font-size:40px;margin-bottom:12px;">&#9888;</div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:16px;">Could not load sheet data</div>
+        <div class="steps">
+          <p style="margin-bottom:12px;">The Google Sheets need to be <strong>published to the web</strong> for this dashboard to work:</p>
+          <ol>
+            <li>Open each Google Sheet</li>
+            <li>Go to <strong>File > Share > Publish to the web</strong></li>
+            <li>Select the correct tab and choose <strong>CSV</strong></li>
+            <li>Click <strong>Publish</strong></li>
+            <li>Come back here and click <strong>Refresh</strong></li>
+          </ol>
+          <p style="margin-top:16px;color:#8b949e;">Error: ${msg}</p>
+        </div>
+      </div>`;
+    document.getElementById('lastUpdated').textContent = 'Error loading data';
+  }
+
+  btn.classList.remove('loading');
+  btn.textContent = 'Refresh';
+}
+
+// === KEYBOARD SHORTCUTS ===
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'r' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') {
+    loadAllData();
+  }
+  if (e.key === '1' && document.activeElement.tagName !== 'INPUT') {
+    document.querySelectorAll('.tab')[0].click();
+  }
+  if (e.key === '2' && document.activeElement.tagName !== 'INPUT') {
+    document.querySelectorAll('.tab')[1].click();
+  }
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault();
+    document.getElementById('searchBox').focus();
+  }
+});
+
+// Boot
+loadAllData();
+if (document.getElementById('autoRefresh').checked) startAutoRefresh();
+</script>
+
+</body>
+</html>
