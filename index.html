@@ -367,11 +367,11 @@ const AB_PIPELINE = [
   { name: 'EMD', col: 13, type: 'check' },
   { name: 'Title Search', col: 14, type: 'check' },
   { name: 'Muni', col: 15, type: 'check' },
-  { name: 'Deed Stamps', col: 16, type: 'check' },
+  { name: 'Deed Stamps (DR228)', col: 16, type: 'check' },
   { name: 'Prelim HUD', col: 17, type: 'check' },
   { name: 'Executed HUD', col: 18, type: 'check' },
-  { name: 'Funding', col: 25, type: 'value' },
   { name: 'Cash to Close', col: 30, type: 'value' },
+  { name: 'Schedule Work', col: 31, type: 'check' },
   { name: 'Closing', col: 21, type: 'date' }
 ];
 const BC_PIPELINE = [
@@ -397,11 +397,11 @@ const AB_NEXT_ACTIONS = {
   'EMD': 'Collect earnest money deposit',
   'Title Search': 'Order title search',
   'Muni': 'Order municipal search',
-  'Deed Stamps': 'Get deed stamps',
+  'Deed Stamps (DR228)': 'DR228 to Dept of Revenue — NOT recorded by title',
   'Prelim HUD': 'Request preliminary HUD from title',
-  'Executed HUD': 'Get HUD executed — then schedule cleanout/dumpsters/pics/lockbox',
-  'Funding': 'Secure funding for closing',
+  'Executed HUD': 'Get HUD executed',
   'Cash to Close': 'Confirm cash to close amount',
+  'Schedule Work': 'Schedule cleanout/dumpsters/pics/lockbox',
   'Closing': 'Schedule closing date'
 };
 const BC_NEXT_ACTIONS = {
