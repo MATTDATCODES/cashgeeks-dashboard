@@ -79,6 +79,30 @@
   .s-jv { background: #1a2a4a; color: #58a6ff; }
   .s-ucp { background: #2a1f2a; color: #d2a8ff; }
 
+  .q2-metrics { padding: 16px 32px; background: #111820; border-bottom: 1px solid #2d333b; }
+  .q2-header { font-size: 13px; font-weight: 700; color: #d2a8ff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+  .q2-header .toggle { font-size: 10px; transition: transform 0.2s; }
+  .q2-header .toggle.collapsed { transform: rotate(-90deg); }
+  .q2-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .q2-card { background: #1c2128; border: 1px solid #2d333b; border-radius: 8px; padding: 16px; }
+  .q2-card-title { font-size: 13px; font-weight: 700; color: #c9d1d9; margin-bottom: 4px; }
+  .q2-card-sub { font-size: 11px; color: #8b949e; margin-bottom: 12px; }
+  .q2-score { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+  .q2-score.good { color: #3fb950; }
+  .q2-score.warn { color: #d29922; }
+  .q2-score.bad { color: #f85149; }
+  .q2-bar-bg { background: #21262d; border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 12px; }
+  .q2-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+  .q2-bar-fill.good { background: #3fb950; }
+  .q2-bar-fill.warn { background: #d29922; }
+  .q2-bar-fill.bad { background: #f85149; }
+  .q2-list { font-size: 12px; line-height: 1.8; }
+  .q2-list .q2-item { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; border-bottom: 1px solid #1c2128; }
+  .q2-list .q2-item:last-child { border-bottom: none; }
+  .q2-list .q2-prop { color: #58a6ff; font-weight: 600; }
+  .q2-list .q2-done { color: #3fb950; font-weight: 700; }
+  .q2-list .q2-miss { color: #f85149; font-weight: 700; }
+
   .ck { color: #3fb950; font-weight: bold; }
   .un { color: #484f58; }
   .wr { color: #d29922; font-weight: bold; }
@@ -113,14 +137,6 @@
   .step-current { color: #d29922; font-weight: 600; }
   .step-next { color: #8b949e; font-size: 11px; }
   .step-next-action { color: #58a6ff; font-size: 11px; font-weight: 500; }
-
-  .prep-checklist { display: flex; flex-wrap: wrap; gap: 4px 8px; margin-top: 4px; }
-  .prep-item { font-size: 10px; padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-flex; align-items: center; gap: 3px; }
-  .prep-done { background: #1f3a2e; color: #3fb950; }
-  .prep-pending { background: #21262d; color: #484f58; }
-  .prep-active { background: #2d2a0f; color: #d29922; font-weight: 600; }
-  .prep-note { font-size: 10px; color: #d29922; font-style: italic; margin-top: 2px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .prep-header { font-size: 10px; font-weight: 700; color: #d29922; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
 
   .loading { text-align: center; padding: 60px 20px; color: #8b949e; }
   .loading .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid #30363d; border-top-color: #58a6ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
@@ -187,6 +203,32 @@
   <div class="stat-card"><div class="label">Pre-Marketing</div><div class="value yellow" id="statPM">—</div></div>
   <div class="stat-card"><div class="label">Closing This Week</div><div class="value red" id="statUrgent">—</div></div>
   <div class="stat-card"><div class="label">Completed</div><div class="value" style="color:#8b949e" id="statDone">—</div></div>
+  <div class="stat-card" style="border-color:#d2a8ff40"><div class="label" style="color:#d2a8ff">Payout Tracker</div><div class="value" id="statPayout">—</div></div>
+  <div class="stat-card" style="border-color:#d2a8ff40"><div class="label" style="color:#d2a8ff">DR228 Filed</div><div class="value" id="statDR228">—</div></div>
+</div>
+
+<div class="q2-metrics" id="q2Section">
+  <div class="q2-header" onclick="toggleQ2()">
+    <span class="toggle" id="q2Toggle">▼</span> Q2 Personal Metrics — Matt
+  </div>
+  <div id="q2Body">
+    <div class="q2-grid">
+      <div class="q2-card">
+        <div class="q2-card-title">Payout Tracker Completion</div>
+        <div class="q2-card-sub">Executed HUD received + Pre-closing game plan documented</div>
+        <div class="q2-score" id="q2PayoutScore">—</div>
+        <div class="q2-bar-bg"><div class="q2-bar-fill" id="q2PayoutBar" style="width:0%"></div></div>
+        <div class="q2-list" id="q2PayoutList"></div>
+      </div>
+      <div class="q2-card">
+        <div class="q2-card-title">DR228 Deed Stamps — Not Recorded</div>
+        <div class="q2-card-sub">DR228 filled out & sent to title — title reports to Dept of Revenue</div>
+        <div class="q2-score" id="q2DR228Score">—</div>
+        <div class="q2-bar-bg"><div class="q2-bar-fill" id="q2DR228Bar" style="width:0%"></div></div>
+        <div class="q2-list" id="q2DR228List"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="tabs">
@@ -275,7 +317,7 @@ const ACTIVE_STATUSES = ['under contract','under contract probate','pre-marketin
 const INACTIVE_STATUSES = ['complete','fell through'];
 
 function ns(s) { return (s || '').toLowerCase().trim(); }
-function isDataRow(status) { const s = ns(status); return ACTIVE_STATUSES.includes(s) || INACTIVE_STATUSES.includes(s); }
+function isDataRow(status) { const s = ns(status); return s !== '' && (ACTIVE_STATUSES.includes(s) || INACTIVE_STATUSES.includes(s)); }
 function isActive(s) { const n = ns(s); return ACTIVE_STATUSES.includes(n) && !n.includes('closed'); }
 
 function statusBadge(status) {
@@ -368,66 +410,63 @@ function countFollowUps(data) {
   }).length;
 }
 
-
 // === PIPELINE DEFINITIONS ===
 const AB_PIPELINE = [
-  { name: 'Contract Filed', col: 7, type: 'check' },
-  { name: 'EMD', col: 13, type: 'check' },
+  { name: 'Contract', col: 7, type: 'check' },
   { name: 'Title Search', col: 14, type: 'check' },
+  { name: 'Binder/EMD', col: 13, type: 'check' },
   { name: 'Muni', col: 15, type: 'check' },
-  { name: 'Deed Stamps (DR228)', col: 16, type: 'check' },
+  { name: 'Deed Stamps', col: 16, type: 'check' },
   { name: 'Prelim HUD', col: 17, type: 'check' },
+  { name: 'Funding', col: 25, type: 'value' },
   { name: 'Executed HUD', col: 18, type: 'check' },
   { name: 'Cash to Close', col: 30, type: 'value' },
-  { name: 'Schedule Work', col: 31, type: 'check' },
   { name: 'Closing', col: 21, type: 'date' }
 ];
+
 const BC_PIPELINE = [
-  { name: 'Contract Filed', col: 7, type: 'check' },
+  { name: 'Contract', col: 7, type: 'check' },
   { name: 'Buyer Intro', col: 10, type: 'check' },
-  { name: 'Seller Intro', col: 11, type: 'check' },
-  { name: 'Title Intro', col: 12, type: 'check' },
+  { name: 'EMD Due', col: 24, type: 'date' },
+  { name: 'EMD Rcvd', col: 25, type: 'check' },
+  { name: 'Insp Period', col: 22, type: 'date' },
   { name: 'Survey', col: 18, type: 'check' },
   { name: 'Appraisal', col: 19, type: 'check' },
-  { name: 'Insp Period', col: 22, type: 'date' },
-  { name: 'EMD Due', col: 24, type: 'date' },
-  { name: 'EMD', col: 25, type: 'check' },
-  { name: 'IPR', col: 26, type: 'check' },
   { name: 'Title', col: 27, type: 'check' },
   { name: 'Muni', col: 28, type: 'check' },
   { name: 'Prelim HUD', col: 29, type: 'check' },
   { name: 'Funding', col: 20, type: 'value' },
-  { name: 'Closed', col: 31, type: 'check' }
+  { name: 'Closing', col: 31, type: 'check' }
 ];
 
+// Next-step action hints for A-B
 const AB_NEXT_ACTIONS = {
-  'Contract Filed': 'File the A-B contract from TJ',
-  'EMD': 'Collect earnest money deposit',
+  'Contract': 'Get contract filed & signed',
   'Title Search': 'Order title search',
+  'Binder/EMD': 'Collect binder deposit / EMD',
   'Muni': 'Order municipal search',
-  'Deed Stamps (DR228)': 'DR228 to Dept of Revenue — NOT recorded by title',
-  'Prelim HUD': 'Request preliminary HUD from title',
-  'Executed HUD': 'Get HUD executed',
+  'Deed Stamps': 'Get deed stamps',
+  'Prelim HUD': 'Request preliminary HUD',
+  'Funding': 'Secure funding',
+  'Executed HUD': 'Get HUD executed — then schedule cleanout/dumpsters/pics/lockbox',
   'Cash to Close': 'Confirm cash to close amount',
-  'Schedule Work': 'Schedule cleanout/dumpsters/pics/lockbox',
   'Closing': 'Schedule closing date'
 };
+
+// Next-step action hints for B-C
 const BC_NEXT_ACTIONS = {
-  'Contract Filed': 'File the B-C contract from TJ',
-  'Buyer Intro': 'Send buyer intro email to title',
-  'Seller Intro': 'Send seller/JV intro email to title',
-  'Title Intro': 'Confirm title company intro sent',
+  'Contract': 'Get B-C contract filed',
+  'Buyer Intro': 'Send buyer intro to title',
+  'EMD Due': 'Confirm EMD due date with buyer',
+  'EMD Rcvd': 'Collect EMD from buyer',
+  'Insp Period': 'Track inspection period deadline',
   'Survey': 'Order survey',
   'Appraisal': 'Schedule appraisal',
-  'Insp Period': 'Track inspection period deadline',
-  'EMD Due': 'Confirm EMD due date with buyer',
-  'EMD': 'Collect EMD from buyer',
-  'IPR': 'Get inspection period release',
   'Title': 'Confirm title clearance',
   'Muni': 'Order municipal search',
-  'Prelim HUD': 'Request preliminary HUD from title',
+  'Prelim HUD': 'Request preliminary HUD',
   'Funding': 'Confirm funding secured',
-  'Closed': 'Schedule closing'
+  'Closing': 'Schedule closing'
 };
 
 function isStepDone(row, step) {
@@ -439,12 +478,24 @@ function isStepDone(row, step) {
 }
 
 function getPipelineState(row, pipeline) {
-  const steps = pipeline.map((step, i) => ({ ...step, done: isStepDone(row, step), index: i }));
+  const steps = pipeline.map((step, i) => ({
+    ...step,
+    done: isStepDone(row, step),
+    index: i
+  }));
+
+  // Find the first incomplete step = current step
   const currentIdx = steps.findIndex(s => !s.done);
+  // If all done, current is the last step (completed)
   const allDone = currentIdx === -1;
-  return { steps, currentIdx: allDone ? steps.length : currentIdx, allDone,
+
+  return {
+    steps,
+    currentIdx: allDone ? steps.length : currentIdx,
+    allDone,
     currentStep: allDone ? null : steps[currentIdx],
-    nextStep: allDone ? null : (currentIdx + 1 < steps.length ? steps[currentIdx + 1] : null) };
+    nextStep: allDone ? null : (currentIdx + 1 < steps.length ? steps[currentIdx + 1] : null)
+  };
 }
 
 function renderPipelineBar(row, pipeline) {
@@ -454,67 +505,24 @@ function renderPipelineBar(row, pipeline) {
     let cls = 'upcoming';
     if (state.steps[i].done) cls = 'done';
     else if (i === state.currentIdx) cls = 'current';
-    html += '<div class="pipeline-step ' + cls + '"><span class="step-tip">' + state.steps[i].name + (state.steps[i].done ? ' \u2713' : '') + '</span></div>';
+    html += `<div class="pipeline-step ${cls}"><span class="step-tip">${state.steps[i].name}${state.steps[i].done ? ' ✓' : ''}</span></div>`;
   }
-  return html + '</div>';
+  html += '</div>';
+  return html;
 }
 
 function renderCurrentStep(row, pipeline, actions) {
   const state = getPipelineState(row, pipeline);
-  if (state.allDone) return '<span class="step-label" style="color:#3fb950;">\u2713 All Complete</span>';
-  return '<span class="step-label step-current">\u25B6 ' + state.currentStep.name + '</span>';
+  if (state.allDone) return '<span class="step-label" style="color:#3fb950;">✓ All Complete</span>';
+  const step = state.currentStep;
+  return `<span class="step-label step-current">▶ ${step.name}</span>`;
 }
 
 function renderNextAction(row, pipeline, actions) {
   const state = getPipelineState(row, pipeline);
   if (state.allDone) return '<span class="step-next">Ready to close</span>';
-  return '<span class="step-next-action">' + (actions[state.currentStep.name] || '') + '</span>';
-}
-
-
-// === PROPERTY PREP CHECKLIST (Post-Purchase / Pre-Marketing) ===
-const PREP_STEPS = [
-  { name: 'Schedule Work', col: 31, type: 'text' },
-  { name: 'Needs Work?', col: 41, type: 'check' },
-  { name: 'Staging', col: 42, type: 'check' },
-  { name: 'Grass Cut', col: 43, type: 'check' },
-  { name: 'LB Code', col: 44, type: 'text' },
-  { name: 'Power/Water', col: 45, type: 'check' },
-  { name: 'Photos', col: 46, type: 'text' },
-  { name: 'Send to Marketing', col: 47, type: 'check' }
-];
-
-function isInPrepPhase(row) {
-  // Property is in prep phase if Executed HUD is done but not yet fully marketed
-  const exHud = (row[18] || '').trim().toUpperCase();
-  const hudDone = exHud === 'TRUE' || exHud === 'YES';
-  return hudDone;
-}
-
-function renderPrepChecklist(row) {
-  if (!isInPrepPhase(row)) return '';
-  let html = '<div><div class="prep-header">🏠 Property Prep</div><div class="prep-checklist">';
-  for (const step of PREP_STEPS) {
-    const val = (row[step.col] || '').trim();
-    const upper = val.toUpperCase();
-    if (step.type === 'check') {
-      const done = upper === 'TRUE' || upper === 'YES';
-      const cls = done ? 'prep-done' : 'prep-pending';
-      html += '<span class="prep-item ' + cls + '">' + (done ? '✓' : '✗') + ' ' + step.name + '</span>';
-    } else {
-      const hasVal = val !== '' && upper !== 'FALSE' && upper !== 'NO';
-      const cls = hasVal ? 'prep-active' : 'prep-pending';
-      html += '<span class="prep-item ' + cls + '">' + (hasVal ? '✓' : '✗') + ' ' + step.name + '</span>';
-    }
-  }
-  html += '</div>';
-  // Show schedule work note if present
-  const schedNote = (row[31] || '').trim();
-  if (schedNote && schedNote.toUpperCase() !== 'FALSE' && schedNote.toUpperCase() !== 'TRUE') {
-    html += '<div class="prep-note">📋 ' + schedNote + '</div>';
-  }
-  html += '</div>';
-  return html;
+  const actionText = actions[state.currentStep.name] || '';
+  return `<span class="step-next-action">${actionText}</span>`;
 }
 
 // === RENDER PURCHASES ===
@@ -537,7 +545,8 @@ function renderPurchases() {
   html += '<div class="table-wrapper"><table><thead><tr>';
   html += '<th>Status</th><th>Property</th><th>Title Co</th><th>Follow Up</th><th>Seller Contact</th>';
   html += '<th>Price</th><th>Binder</th><th>Contract</th><th>Deed Stamps</th><th>Executed HUD</th><th>Close</th><th>Est Close</th>';
-  html += '<th>EMD</th><th>Title</th><th>Muni</th><th>HUD</th><th>Cash to Close</th><th>Progress</th><th>Current Step</th><th>What\'s Next</th>';
+  html += '<th>EMD</th><th>Title</th><th>Muni</th><th>HUD</th><th>Funding</th><th>Cash to Close</th>';
+  html += '<th>Progress</th><th>Current Step</th><th>What\'s Next</th>';
   html += '</tr></thead><tbody>';
 
   for (const r of filtered) {
@@ -549,16 +558,17 @@ function renderPurchases() {
     html += `<td class="tc">${r[2] || ''}</td>`;
     html += `<td class="fu">${r[3] || ''}</td>`;
     html += `<td class="ci">${(r[4] || '').replace(/\n/g, '<br>')}</td>`;
-    html += `<td class="mn">${r[4] ? '$' + Number(r[8].replace(/[$,]/g, '')).toLocaleString() : '—'}</td>`;
+    html += `<td class="mn">${r[8] ? '$' + Number(r[8].replace(/[$,]/g, '')).toLocaleString() : '—'}</td>`;
     html += `<td class="mn">${r[10] ? '$' + Number(r[10].replace(/[$,]/g, '')).toLocaleString() : '—'}</td>`;
     html += `<td>${chk(r[7])}</td><td>${chk(r[16])}</td><td>${chk(r[18])}</td>`;
     html += `<td class="${dlClass(r[21])}">${r[21] || '—'}${getDeadlineBadge(r[21])}</td>`;
     html += `<td class="${dlClass(r[22])}">${r[22] || '—'}${getDeadlineBadge(r[22])}</td>`;
     html += `<td>${chk(r[13])}</td><td>${chk(r[14])}</td><td>${chk(r[15])}</td><td>${chk(r[17])}</td>`;
-    html += `<td>${chk(r[30])}</td>`;
+    html += `<td class="tc">${r[25] || '—'}</td>`;
+    html += `<td>${r[30] || '—'}</td>`;
     html += `<td>${renderPipelineBar(r, AB_PIPELINE)}</td>`;
     html += `<td>${renderCurrentStep(r, AB_PIPELINE, AB_NEXT_ACTIONS)}</td>`;
-    html += `<td>${renderNextAction(r, AB_PIPELINE, AB_NEXT_ACTIONS)}${renderPrepChecklist(r)}</td>`;
+    html += `<td>${renderNextAction(r, AB_PIPELINE, AB_NEXT_ACTIONS)}</td>`;
     html += '</tr>';
   }
   html += '</tbody></table></div>';
@@ -585,7 +595,8 @@ function renderSales() {
   html += '<div class="table-wrapper"><table><thead><tr>';
   html += '<th>Status</th><th>Property</th><th>Title</th><th>Follow Up</th><th>Buyer</th>';
   html += '<th>CC</th><th>Est Close</th><th>Buyer Intro</th><th>Seller Intro</th><th>Title Intro</th>';
-  html += '<th>Lender</th><th>Funding</th><th>EMD Due</th><th>EMD</th><th>Survey</th><th>Appraisal</th><th>Insp Period</th><th>IPR</th><th>Title</th><th>Muni</th><th>Prelim HUD</th><th>Progress</th><th>Current Step</th><th>What\'s Next</th>';
+  html += '<th>Lender</th><th>Funding</th><th>EMD Due</th><th>EMD</th><th>Survey</th><th>Appraisal</th><th>Insp Period</th><th>IPR</th><th>Title</th><th>Muni</th><th>Prelim HUD</th>';
+  html += '<th>Progress</th><th>Current Step</th><th>What\'s Next</th>';
   html += '</tr></thead><tbody>';
 
   for (const r of filtered) {
@@ -598,7 +609,7 @@ function renderSales() {
     html += `<td class="tc">${r[3] || ''}</td>`;
     html += `<td class="fu">${followUp || r[2] || ''}</td>`;
     html += `<td class="ci">${(r[4] || '').replace(/\n/g, '<br>')}</td>`;
-    html += `<td class="${dlClass(r[4])}">${r[8] || '—'}</td>`;
+    html += `<td class="${dlClass(r[8])}">${r[8] || '—'}</td>`;
     html += `<td class="${dlClass(r[9])}">${r[9] || '—'}${getDeadlineBadge(r[9])}</td>`;
     html += `<td>${chk(r[10])}</td><td>${chk(r[11])}</td><td>${chk(r[12])}</td>`;
     html += `<td class="tc">${r[17] || '—'}</td>`;
@@ -607,10 +618,10 @@ function renderSales() {
     html += `<td>${chk(r[25])}</td><td>${chk(r[18])}</td><td>${chk(r[19])}</td>`;
     html += `<td class="${dlClass(r[22])}">${r[22] || '—'}</td>`;
     html += `<td>${chk(r[26])}</td><td>${chk(r[27])}</td><td>${chk(r[28])}</td><td>${chk(r[29])}</td>`;
-        html += `<td>${renderPipelineBar(r, BC_PIPELINE)}</td>`;
+    html += `<td>${renderPipelineBar(r, BC_PIPELINE)}</td>`;
     html += `<td>${renderCurrentStep(r, BC_PIPELINE, BC_NEXT_ACTIONS)}</td>`;
     html += `<td>${renderNextAction(r, BC_PIPELINE, BC_NEXT_ACTIONS)}</td>`;
-html += '</tr>';
+    html += '</tr>';
   }
   html += '</tbody></table></div>';
   container.innerHTML = html;
@@ -646,7 +657,71 @@ function showTab(tab, el) {
   document.getElementById('tab-sales').style.display = tab === 'sales' ? 'block' : 'none';
 }
 
-function render() { renderPurchases(); renderSales(); }
+// === Q2 METRICS ===
+function toggleQ2() {
+  const body = document.getElementById('q2Body');
+  const toggle = document.getElementById('q2Toggle');
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    toggle.classList.remove('collapsed');
+  } else {
+    body.style.display = 'none';
+    toggle.classList.add('collapsed');
+  }
+}
+
+function updateQ2Metrics() {
+  const active = purchaseData.filter(r => isDataRow(r[0]) && isActive(r[0]));
+  if (active.length === 0) return;
+
+  // === PAYOUT TRACKER: Executed HUD (col 18) + Pre-closing game plan (col 31 has content) ===
+  let payoutDone = 0;
+  let payoutHTML = '';
+  for (const r of active) {
+    const addr = r[1] || 'Unknown';
+    const hudVal = (r[18] || '').trim().toUpperCase();
+    const hudOK = hudVal === 'TRUE' || hudVal === 'YES';
+    const planVal = (r[31] || '').trim();
+    const planOK = planVal !== '' && planVal.toUpperCase() !== 'FALSE' && planVal.toUpperCase() !== 'NO';
+    const complete = hudOK && planOK;
+    if (complete) payoutDone++;
+
+    const hudIcon = hudOK ? '<span class="q2-done">✓ HUD</span>' : '<span class="q2-miss">✗ HUD</span>';
+    const planIcon = planOK ? '<span class="q2-done">✓ Plan</span>' : '<span class="q2-miss">✗ Plan</span>';
+    payoutHTML += `<div class="q2-item"><span class="q2-prop">${addr}</span><span>${hudIcon} ${planIcon}</span></div>`;
+  }
+
+  const payoutPct = Math.round((payoutDone / active.length) * 100);
+  const payoutClass = payoutPct >= 80 ? 'good' : payoutPct >= 50 ? 'warn' : 'bad';
+  document.getElementById('q2PayoutScore').textContent = `${payoutDone}/${active.length} (${payoutPct}%)`;
+  document.getElementById('q2PayoutScore').className = `q2-score ${payoutClass}`;
+  document.getElementById('q2PayoutBar').style.width = `${payoutPct}%`;
+  document.getElementById('q2PayoutBar').className = `q2-bar-fill ${payoutClass}`;
+  document.getElementById('q2PayoutList').innerHTML = payoutHTML;
+
+  // === DR228: Deed Stamps column (col 16) ===
+  let dr228Done = 0;
+  let dr228HTML = '';
+  for (const r of active) {
+    const addr = r[1] || 'Unknown';
+    const dsVal = (r[16] || '').trim().toUpperCase();
+    const dsOK = dsVal === 'TRUE' || dsVal === 'YES';
+    if (dsOK) dr228Done++;
+
+    const icon = dsOK ? '<span class="q2-done">✓ Filed</span>' : '<span class="q2-miss">✗ Not Filed</span>';
+    dr228HTML += `<div class="q2-item"><span class="q2-prop">${addr}</span><span>${icon}</span></div>`;
+  }
+
+  const dr228Pct = Math.round((dr228Done / active.length) * 100);
+  const dr228Class = dr228Pct >= 80 ? 'good' : dr228Pct >= 50 ? 'warn' : 'bad';
+  document.getElementById('q2DR228Score').textContent = `${dr228Done}/${active.length} (${dr228Pct}%)`;
+  document.getElementById('q2DR228Score').className = `q2-score ${dr228Class}`;
+  document.getElementById('q2DR228Bar').style.width = `${dr228Pct}%`;
+  document.getElementById('q2DR228Bar').className = `q2-bar-fill ${dr228Class}`;
+  document.getElementById('q2DR228List').innerHTML = dr228HTML;
+}
+
+function render() { renderPurchases(); renderSales(); updateQ2Metrics(); }
 
 // === STATS ===
 function updateStats() {
@@ -657,6 +732,27 @@ function updateStats() {
   document.getElementById('statPM').textContent = allP.filter(r => ns(r[0]) === 'pre-marketing').length;
   document.getElementById('statUrgent').textContent = countClosingThisWeek();
   document.getElementById('statDone').textContent = purchaseData.filter(r => ns(r[0]) === 'complete').length + salesData.filter(r => ns(r[0]) === 'complete').length;
+
+  // Q2 stat cards
+  const activeP = purchaseData.filter(r => isDataRow(r[0]) && isActive(r[0]));
+  if (activeP.length > 0) {
+    let payC = 0, drC = 0;
+    for (const r of activeP) {
+      const hv = (r[18] || '').trim().toUpperCase();
+      const pv = (r[31] || '').trim();
+      if ((hv === 'TRUE' || hv === 'YES') && pv !== '' && pv.toUpperCase() !== 'FALSE' && pv.toUpperCase() !== 'NO') payC++;
+      const dv = (r[16] || '').trim().toUpperCase();
+      if (dv === 'TRUE' || dv === 'YES') drC++;
+    }
+    const payPct = Math.round((payC / activeP.length) * 100);
+    const drPct = Math.round((drC / activeP.length) * 100);
+    const payEl = document.getElementById('statPayout');
+    const drEl = document.getElementById('statDR228');
+    payEl.textContent = `${payPct}%`;
+    payEl.className = `value ${payPct >= 80 ? 'green' : payPct >= 50 ? 'yellow' : 'red'}`;
+    drEl.textContent = `${drPct}%`;
+    drEl.className = `value ${drPct >= 80 ? 'green' : drPct >= 50 ? 'yellow' : 'red'}`;
+  }
 }
 
 // === TOAST ===
