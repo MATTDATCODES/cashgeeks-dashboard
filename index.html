@@ -537,7 +537,7 @@ function renderPurchases() {
   html += '<div class="table-wrapper"><table><thead><tr>';
   html += '<th>Status</th><th>Property</th><th>Title Co</th><th>Follow Up</th><th>Seller Contact</th>';
   html += '<th>Price</th><th>Binder</th><th>Contract</th><th>Deed Stamps</th><th>Executed HUD</th><th>Close</th><th>Est Close</th>';
-  html += '<th>EMD</th><th>Title</th><th>Muni</th><th>HUD</th><th>Funding</th><th>Cash to Close</th><th>Progress</th><th>Current Step</th><th>What\'s Next</th>';
+  html += '<th>EMD</th><th>Title</th><th>Muni</th><th>HUD</th><th>Cash to Close</th><th>Progress</th><th>Current Step</th><th>What\'s Next</th>';
   html += '</tr></thead><tbody>';
 
   for (const r of filtered) {
@@ -555,8 +555,7 @@ function renderPurchases() {
     html += `<td class="${dlClass(r[21])}">${r[21] || '—'}${getDeadlineBadge(r[21])}</td>`;
     html += `<td class="${dlClass(r[22])}">${r[22] || '—'}${getDeadlineBadge(r[22])}</td>`;
     html += `<td>${chk(r[13])}</td><td>${chk(r[14])}</td><td>${chk(r[15])}</td><td>${chk(r[17])}</td>`;
-    html += `<td class="tc">${r[25] || '—'}</td>`;
-    html += `<td>${r[30] || '—'}</td>`;
+    html += `<td>${chk(r[30])}</td>`;
     html += `<td>${renderPipelineBar(r, AB_PIPELINE)}</td>`;
     html += `<td>${renderCurrentStep(r, AB_PIPELINE, AB_NEXT_ACTIONS)}</td>`;
     html += `<td>${renderNextAction(r, AB_PIPELINE, AB_NEXT_ACTIONS)}${renderPrepChecklist(r)}</td>`;
