@@ -101,6 +101,19 @@
   .deadline-overdue { background: #3b1f1f; color: #f85149; }
   .deadline-soon { background: #3b2f1f; color: #d29922; }
 
+  .pipeline-bar { display: flex; gap: 2px; align-items: center; min-width: 200px; }
+  .pipeline-step { height: 8px; flex: 1; border-radius: 4px; position: relative; cursor: default; }
+  .pipeline-step.done { background: #238636; }
+  .pipeline-step.current { background: #d29922; animation: pulse-step 2s ease-in-out infinite; }
+  .pipeline-step.upcoming { background: #21262d; }
+  @keyframes pulse-step { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+  .pipeline-step .step-tip { display: none; position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); background: #1c2128; border: 1px solid #484f58; color: #e1e4e8; padding: 4px 8px; border-radius: 4px; font-size: 10px; white-space: nowrap; z-index: 10; pointer-events: none; }
+  .pipeline-step:hover .step-tip { display: block; }
+  .step-label { font-size: 11px; white-space: nowrap; }
+  .step-current { color: #d29922; font-weight: 600; }
+  .step-next { color: #8b949e; font-size: 11px; }
+  .step-next-action { color: #58a6ff; font-size: 11px; font-weight: 500; }
+
   .loading { text-align: center; padding: 60px 20px; color: #8b949e; }
   .loading .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid #30363d; border-top-color: #58a6ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -250,12 +263,12 @@ async function fetchSheet(sheetId, gid) {
 }
 
 // === STATUS HELPERS ===
-const ACTIVE_STATUSES = ['under contract','under contract probate','pre-marketing','marketing','under contract to sell','co-wholesale','cash geeks owned','cash geeks purchase','wholesale','double close','mls purchase - ab','mls purchase - bc','straight sell','limbo','jv buy - closed','purchased/rental'];
+const ACTIVE_STATUSES = ['under contract','under contract probate','pre-marketing','marketing','under contract to sell','co-wholesale','cash geeks owned','cash geeks purchase','wholesale','double close','mls purchase - ab','mls purchase - bc','straight sell','limbo','purchased/rental'];
 const INACTIVE_STATUSES = ['complete','fell through'];
 
 function ns(s) { return (s || '').toLowerCase().trim(); }
 function isDataRow(status) { const s = ns(status); return ACTIVE_STATUSES.includes(s) || INACTIVE_STATUSES.includes(s); }
-function isActive(s) { return ACTIVE_STATUSES.includes(ns(s)); }
+function isActive(s) { const n = ns(s); return ACTIVE_STATUSES.includes(n) && !n.includes('closed'); }
 
 function statusBadge(status) {
   const s = ns(status);
@@ -347,6 +360,109 @@ function countFollowUps(data) {
   }).length;
 }
 
+
+// === PIPELINE DEFINITIONS ===
+const AB_PIPELINE = [
+  { name: 'Contract Filed', col: 7, type: 'check' },
+  { name: 'EMD', col: 13, type: 'check' },
+  { name: 'Title Search', col: 14, type: 'check' },
+  { name: 'Muni', col: 15, type: 'check' },
+  { name: 'Deed Stamps', col: 16, type: 'check' },
+  { name: 'Prelim HUD', col: 17, type: 'check' },
+  { name: 'Executed HUD', col: 18, type: 'check' },
+  { name: 'Funding', col: 25, type: 'value' },
+  { name: 'Cash to Close', col: 30, type: 'value' },
+  { name: 'Closing', col: 21, type: 'date' }
+];
+const BC_PIPELINE = [
+  { name: 'Contract Filed', col: 7, type: 'check' },
+  { name: 'Buyer Intro', col: 10, type: 'check' },
+  { name: 'Seller Intro', col: 11, type: 'check' },
+  { name: 'Title Intro', col: 12, type: 'check' },
+  { name: 'Survey', col: 18, type: 'check' },
+  { name: 'Appraisal', col: 19, type: 'check' },
+  { name: 'Insp Period', col: 22, type: 'date' },
+  { name: 'EMD Due', col: 24, type: 'date' },
+  { name: 'EMD', col: 25, type: 'check' },
+  { name: 'IPR', col: 26, type: 'check' },
+  { name: 'Title', col: 27, type: 'check' },
+  { name: 'Muni', col: 28, type: 'check' },
+  { name: 'Prelim HUD', col: 29, type: 'check' },
+  { name: 'Funding', col: 20, type: 'value' },
+  { name: 'Closed', col: 31, type: 'check' }
+];
+
+const AB_NEXT_ACTIONS = {
+  'Contract Filed': 'File the A-B contract from TJ',
+  'EMD': 'Collect earnest money deposit',
+  'Title Search': 'Order title search',
+  'Muni': 'Order municipal search',
+  'Deed Stamps': 'Get deed stamps',
+  'Prelim HUD': 'Request preliminary HUD from title',
+  'Executed HUD': 'Get HUD executed — then schedule cleanout/dumpsters/pics/lockbox',
+  'Funding': 'Secure funding for closing',
+  'Cash to Close': 'Confirm cash to close amount',
+  'Closing': 'Schedule closing date'
+};
+const BC_NEXT_ACTIONS = {
+  'Contract Filed': 'File the B-C contract from TJ',
+  'Buyer Intro': 'Send buyer intro email to title',
+  'Seller Intro': 'Send seller/JV intro email to title',
+  'Title Intro': 'Confirm title company intro sent',
+  'Survey': 'Order survey',
+  'Appraisal': 'Schedule appraisal',
+  'Insp Period': 'Track inspection period deadline',
+  'EMD Due': 'Confirm EMD due date with buyer',
+  'EMD': 'Collect EMD from buyer',
+  'IPR': 'Get inspection period release',
+  'Title': 'Confirm title clearance',
+  'Muni': 'Order municipal search',
+  'Prelim HUD': 'Request preliminary HUD from title',
+  'Funding': 'Confirm funding secured',
+  'Closed': 'Schedule closing'
+};
+
+function isStepDone(row, step) {
+  const val = (row[step.col] || '').trim().toUpperCase();
+  if (step.type === 'check') return val === 'TRUE' || val === 'YES';
+  if (step.type === 'date') return val !== '' && val !== 'FALSE' && val !== 'NO';
+  if (step.type === 'value') return val !== '' && val !== 'FALSE' && val !== 'NO' && val !== '0' && val !== '$0';
+  return val !== '';
+}
+
+function getPipelineState(row, pipeline) {
+  const steps = pipeline.map((step, i) => ({ ...step, done: isStepDone(row, step), index: i }));
+  const currentIdx = steps.findIndex(s => !s.done);
+  const allDone = currentIdx === -1;
+  return { steps, currentIdx: allDone ? steps.length : currentIdx, allDone,
+    currentStep: allDone ? null : steps[currentIdx],
+    nextStep: allDone ? null : (currentIdx + 1 < steps.length ? steps[currentIdx + 1] : null) };
+}
+
+function renderPipelineBar(row, pipeline) {
+  const state = getPipelineState(row, pipeline);
+  let html = '<div class="pipeline-bar">';
+  for (let i = 0; i < state.steps.length; i++) {
+    let cls = 'upcoming';
+    if (state.steps[i].done) cls = 'done';
+    else if (i === state.currentIdx) cls = 'current';
+    html += '<div class="pipeline-step ' + cls + '"><span class="step-tip">' + state.steps[i].name + (state.steps[i].done ? ' \u2713' : '') + '</span></div>';
+  }
+  return html + '</div>';
+}
+
+function renderCurrentStep(row, pipeline, actions) {
+  const state = getPipelineState(row, pipeline);
+  if (state.allDone) return '<span class="step-label" style="color:#3fb950;">\u2713 All Complete</span>';
+  return '<span class="step-label step-current">\u25B6 ' + state.currentStep.name + '</span>';
+}
+
+function renderNextAction(row, pipeline, actions) {
+  const state = getPipelineState(row, pipeline);
+  if (state.allDone) return '<span class="step-next">Ready to close</span>';
+  return '<span class="step-next-action">' + (actions[state.currentStep.name] || '') + '</span>';
+}
+
 // === RENDER PURCHASES ===
 function renderPurchases() {
   const container = document.getElementById('tab-purchases');
@@ -367,7 +483,7 @@ function renderPurchases() {
   html += '<div class="table-wrapper"><table><thead><tr>';
   html += '<th>Status</th><th>Property</th><th>Title Co</th><th>Follow Up</th><th>Seller Contact</th>';
   html += '<th>Price</th><th>Binder</th><th>Contract</th><th>Deed Stamps</th><th>Executed HUD</th><th>Close</th><th>Est Close</th>';
-  html += '<th>EMD</th><th>Title</th><th>Muni</th><th>HUD</th><th>Funding</th><th>Cash to Close</th>';
+  html += '<th>EMD</th><th>Title</th><th>Muni</th><th>HUD</th><th>Funding</th><th>Cash to Close</th><th>Progress</th><th>Current Step</th><th>What\'s Next</th>';
   html += '</tr></thead><tbody>';
 
   for (const r of filtered) {
@@ -387,6 +503,9 @@ function renderPurchases() {
     html += `<td>${chk(r[13])}</td><td>${chk(r[14])}</td><td>${chk(r[15])}</td><td>${chk(r[17])}</td>`;
     html += `<td class="tc">${r[25] || '—'}</td>`;
     html += `<td>${r[30] || '—'}</td>`;
+    html += `<td>${renderPipelineBar(r, AB_PIPELINE)}</td>`;
+    html += `<td>${renderCurrentStep(r, AB_PIPELINE, AB_NEXT_ACTIONS)}</td>`;
+    html += `<td>${renderNextAction(r, AB_PIPELINE, AB_NEXT_ACTIONS)}</td>`;
     html += '</tr>';
   }
   html += '</tbody></table></div>';
@@ -413,7 +532,7 @@ function renderSales() {
   html += '<div class="table-wrapper"><table><thead><tr>';
   html += '<th>Status</th><th>Property</th><th>Title</th><th>Follow Up</th><th>Buyer</th>';
   html += '<th>CC</th><th>Est Close</th><th>Buyer Intro</th><th>Seller Intro</th><th>Title Intro</th>';
-  html += '<th>Lender</th><th>Funding</th><th>EMD Due</th><th>EMD</th><th>Survey</th><th>Appraisal</th><th>Insp Period</th><th>IPR</th><th>Title</th><th>Muni</th><th>Prelim HUD</th>';
+  html += '<th>Lender</th><th>Funding</th><th>EMD Due</th><th>EMD</th><th>Survey</th><th>Appraisal</th><th>Insp Period</th><th>IPR</th><th>Title</th><th>Muni</th><th>Prelim HUD</th><th>Progress</th><th>Current Step</th><th>What\'s Next</th>';
   html += '</tr></thead><tbody>';
 
   for (const r of filtered) {
@@ -435,7 +554,10 @@ function renderSales() {
     html += `<td>${chk(r[25])}</td><td>${chk(r[18])}</td><td>${chk(r[19])}</td>`;
     html += `<td class="${dlClass(r[22])}">${r[22] || '—'}</td>`;
     html += `<td>${chk(r[26])}</td><td>${chk(r[27])}</td><td>${chk(r[28])}</td><td>${chk(r[29])}</td>`;
-    html += '</tr>';
+        html += `<td>${renderPipelineBar(r, BC_PIPELINE)}</td>`;
+    html += `<td>${renderCurrentStep(r, BC_PIPELINE, BC_NEXT_ACTIONS)}</td>`;
+    html += `<td>${renderNextAction(r, BC_PIPELINE, BC_NEXT_ACTIONS)}</td>`;
+html += '</tr>';
   }
   html += '</tbody></table></div>';
   container.innerHTML = html;
