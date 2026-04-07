@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CashGeeks TC Dashboard</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð°</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e1e4e8; min-height: 100vh; }
@@ -149,7 +149,7 @@
 <div class="header">
   <div>
     <h1><span class="logo">CG</span> CashGeeks TC Dashboard</h1>
-    <div class="subtitle">Regency Litho Assets LLC â Live Transaction Tracker</div>
+    <div class="subtitle">Regency Litho Assets LLC — Live Transaction Tracker</div>
   </div>
   <div class="header-right">
     <label class="auto-refresh-label">
@@ -161,11 +161,11 @@
 </div>
 
 <div class="stats-bar" id="statsBar">
-  <div class="stat-card"><div class="label">Total Active</div><div class="value blue" id="statActive">â</div></div>
-  <div class="stat-card"><div class="label">Under Contract</div><div class="value green" id="statUC">â</div></div>
-  <div class="stat-card"><div class="label">Pre-Marketing</div><div class="value yellow" id="statPM">â</div></div>
-  <div class="stat-card"><div class="label">Closing This Week</div><div class="value red" id="statUrgent">â</div></div>
-  <div class="stat-card"><div class="label">Completed</div><div class="value" style="color:#8b949e" id="statDone">â</div></div>
+  <div class="stat-card"><div class="label">Total Active</div><div class="value blue" id="statActive">—</div></div>
+  <div class="stat-card"><div class="label">Under Contract</div><div class="value green" id="statUC">—</div></div>
+  <div class="stat-card"><div class="label">Pre-Marketing</div><div class="value yellow" id="statPM">—</div></div>
+  <div class="stat-card"><div class="label">Closing This Week</div><div class="value red" id="statUrgent">—</div></div>
+  <div class="stat-card"><div class="label">Completed</div><div class="value" style="color:#8b949e" id="statDone">—</div></div>
 </div>
 
 <div class="tabs">
@@ -361,7 +361,7 @@ function renderPurchases() {
 
   let html = `<div class="section-title">A-B Purchase Side <span class="count">${filtered.length} properties</span></div>`;
   html += `<div class="action-bar">
-    <a class="action-btn" href="https://docs.google.com/spreadsheets/d/1EFmLH_5Y-BNQ5kc05zb2fg7gmvl5iya1a43NR48Xu_4/edit#gid=0" target="_blank">ð Open A-B Sheet</a>
+    <a class="action-btn" href="https://docs.google.com/spreadsheets/d/1EFmLH_5Y-BNQ5kc05zb2fg7gmvl5iya1a43NR48Xu_4/edit#gid=0" target="_blank">📄 Open A-B Sheet</a>
     <div class="follow-up-count">Follow-ups needed: <strong>${countFollowUps(filtered)}</strong></div>
   </div>`;
   html += '<div class="table-wrapper"><table><thead><tr>';
@@ -375,18 +375,18 @@ function renderPurchases() {
     const editUrl = `https://docs.google.com/spreadsheets/d/1EFmLH_5Y-BNQ5kc05zb2fg7gmvl5iya1a43NR48Xu_4/edit#gid=0`;
     html += `<tr class="${pc}">`;
     html += `<td>${statusBadge(r[0])}</td>`;
-    html += `<td class="pl"><div class="pl-edit"><span>${r[1] || ''}</span><a class="edit-icon" href="${editUrl}" target="_blank" title="Edit in sheet">ð</a></div></td>`;
+    html += `<td class="pl"><div class="pl-edit"><span>${r[1] || ''}</span><a class="edit-icon" href="${editUrl}" target="_blank" title="Edit in sheet">📝</a></div></td>`;
     html += `<td class="tc">${r[2] || ''}</td>`;
     html += `<td class="fu">${r[3] || ''}</td>`;
     html += `<td class="ci">${(r[4] || '').replace(/\n/g, '<br>')}</td>`;
-    html += `<td class="mn">${r[4] ? '$' + Number(r[8].replace(/[$,]/g, '')).toLocaleString() : 'â'}</td>`;
-    html += `<td class="mn">${r[10] ? '$' + Number(r[10].replace(/[$,]/g, '')).toLocaleString() : 'â'}</td>`;
+    html += `<td class="mn">${r[4] ? '$' + Number(r[8].replace(/[$,]/g, '')).toLocaleString() : '—'}</td>`;
+    html += `<td class="mn">${r[10] ? '$' + Number(r[10].replace(/[$,]/g, '')).toLocaleString() : '—'}</td>`;
     html += `<td>${chk(r[7])}</td><td>${chk(r[16])}</td><td>${chk(r[18])}</td>`;
-    html += `<td class="${dlClass(r[21])}">${r[21] || 'â'}${getDeadlineBadge(r[21])}</td>`;
-    html += `<td class="${dlClass(r[22])}">${r[22] || 'â'}${getDeadlineBadge(r[22])}</td>`;
+    html += `<td class="${dlClass(r[21])}">${r[21] || '—'}${getDeadlineBadge(r[21])}</td>`;
+    html += `<td class="${dlClass(r[22])}">${r[22] || '—'}${getDeadlineBadge(r[22])}</td>`;
     html += `<td>${chk(r[13])}</td><td>${chk(r[14])}</td><td>${chk(r[15])}</td><td>${chk(r[17])}</td>`;
-    html += `<td class="tc">${r[25] || 'â'}</td>`;
-    html += `<td>${r[30] || 'â'}</td>`;
+    html += `<td class="tc">${r[25] || '—'}</td>`;
+    html += `<td>${r[30] || '—'}</td>`;
     html += '</tr>';
   }
   html += '</tbody></table></div>';
@@ -407,7 +407,7 @@ function renderSales() {
 
   let html = `<div class="section-title">B-C Sales / Transactions <span class="count">${filtered.length} properties</span></div>`;
   html += `<div class="action-bar">
-    <a class="action-btn" href="https://docs.google.com/spreadsheets/d/10RbZNdVA07G5HPKbfMpce8RF4WDJu8BhSyjZk5kbHpY/edit#gid=1484254259" target="_blank">ð Open B-C Sheet</a>
+    <a class="action-btn" href="https://docs.google.com/spreadsheets/d/10RbZNdVA07G5HPKbfMpce8RF4WDJu8BhSyjZk5kbHpY/edit#gid=1484254259" target="_blank">📄 Open B-C Sheet</a>
     <div class="follow-up-count">Follow-ups needed: <strong>${countFollowUps(filtered)}</strong></div>
   </div>`;
   html += '<div class="table-wrapper"><table><thead><tr>';
@@ -418,22 +418,22 @@ function renderSales() {
 
   for (const r of filtered) {
     const pc = prClass(r[9]);
-    const followUp = [r[5], r[6]].filter(Boolean).join(' â ');
+    const followUp = [r[5], r[6]].filter(Boolean).join(' — ');
     const editUrl = `https://docs.google.com/spreadsheets/d/10RbZNdVA07G5HPKbfMpce8RF4WDJu8BhSyjZk5kbHpY/edit#gid=1484254259`;
     html += `<tr class="${pc}">`;
     html += `<td>${statusBadge(r[0])}</td>`;
-    html += `<td class="pl"><div class="pl-edit"><span>${r[1] || ''}</span><a class="edit-icon" href="${editUrl}" target="_blank" title="Edit in sheet">ð</a></div></td>`;
+    html += `<td class="pl"><div class="pl-edit"><span>${r[1] || ''}</span><a class="edit-icon" href="${editUrl}" target="_blank" title="Edit in sheet">📝</a></div></td>`;
     html += `<td class="tc">${r[3] || ''}</td>`;
     html += `<td class="fu">${followUp || r[2] || ''}</td>`;
     html += `<td class="ci">${(r[4] || '').replace(/\n/g, '<br>')}</td>`;
-    html += `<td class="${dlClass(r[4])}">${r[8] || 'â'}</td>`;
-    html += `<td class="${dlClass(r[9])}">${r[9] || 'â'}${getDeadlineBadge(r[9])}</td>`;
+    html += `<td class="${dlClass(r[4])}">${r[8] || '—'}</td>`;
+    html += `<td class="${dlClass(r[9])}">${r[9] || '—'}${getDeadlineBadge(r[9])}</td>`;
     html += `<td>${chk(r[10])}</td><td>${chk(r[11])}</td><td>${chk(r[12])}</td>`;
-    html += `<td class="tc">${r[17] || 'â'}</td>`;
-    html += `<td class="tc">${r[20] || 'â'}</td>`;
-    html += `<td class="${dlClass(r[24])}">${r[24] || 'â'}${getDeadlineBadge(r[24])}</td>`;
+    html += `<td class="tc">${r[17] || '—'}</td>`;
+    html += `<td class="tc">${r[20] || '—'}</td>`;
+    html += `<td class="${dlClass(r[24])}">${r[24] || '—'}${getDeadlineBadge(r[24])}</td>`;
     html += `<td>${chk(r[25])}</td><td>${chk(r[18])}</td><td>${chk(r[19])}</td>`;
-    html += `<td class="${dlClass(r[22])}">${r[22] || 'â'}</td>`;
+    html += `<td class="${dlClass(r[22])}">${r[22] || '—'}</td>`;
     html += `<td>${chk(r[26])}</td><td>${chk(r[27])}</td><td>${chk(r[28])}</td><td>${chk(r[29])}</td>`;
     html += '</tr>';
   }
@@ -532,7 +532,7 @@ async function loadAllData(silent) {
 
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    document.getElementById('lastUpdated').textContent = `Live â ${timeStr}`;
+    document.getElementById('lastUpdated').textContent = `Live — ${timeStr}`;
     if (silent) showToast('Dashboard refreshed');
 
   } catch (err) {
