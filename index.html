@@ -50,6 +50,11 @@
   .section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #c9d1d9; display: flex; align-items: center; gap: 8px; }
   .section-title .count { background: #30363d; color: #8b949e; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
 
+  .action-bar { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+  .action-btn { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 8px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  .action-btn:hover { background: #30363d; border-color: #58a6ff; }
+  .action-bar .follow-up-count { font-size: 12px; color: #8b949e; background: #1c2128; padding: 6px 12px; border-radius: 6px; border: 1px solid #2d333b; }
+
   .table-wrapper { overflow-x: auto; margin-bottom: 32px; border-radius: 8px; border: 1px solid #2d333b; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   thead th { background: #1c2128; color: #8b949e; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; padding: 10px 12px; text-align: left; white-space: nowrap; border-bottom: 1px solid #2d333b; position: sticky; top: 0; z-index: 2; }
@@ -79,6 +84,9 @@
   .wr { color: #d29922; font-weight: bold; }
   .fu { max-width: 300px; font-size: 12px; line-height: 1.4; color: #c9d1d9; }
   .pl { color: #58a6ff; font-weight: 600; white-space: nowrap; }
+  .pl-edit { display: flex; align-items: center; gap: 6px; }
+  .edit-icon { color: #8b949e; text-decoration: none; font-size: 12px; cursor: pointer; }
+  .edit-icon:hover { color: #58a6ff; }
   .tc { color: #8b949e; font-size: 12px; }
   .ci { font-size: 11px; color: #8b949e; max-width: 200px; }
   .mn { font-family: 'SF Mono', Consolas, monospace; color: #3fb950; white-space: nowrap; }
@@ -88,6 +96,10 @@
 
   .ph { border-left: 3px solid #f85149; }
   .pmd { border-left: 3px solid #d29922; }
+
+  .deadline-badge { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; margin-left: 4px; white-space: nowrap; display: inline-block; }
+  .deadline-overdue { background: #3b1f1f; color: #f85149; }
+  .deadline-soon { background: #3b2f1f; color: #d29922; }
 
   .loading { text-align: center; padding: 60px 20px; color: #8b949e; }
   .loading .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid #30363d; border-top-color: #58a6ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
@@ -119,7 +131,7 @@
     body { background: #fff; color: #000; }
     .header { background: #fff; border-bottom: 2px solid #000; }
     .header h1 { color: #000; }
-    .refresh-btn, .auto-refresh-label, .filter-bar { display: none !important; }
+    .refresh-btn, .auto-refresh-label, .filter-bar, .action-bar { display: none !important; }
     .stats-bar { background: #fff; }
     .stat-card { background: #f5f5f5; border-color: #ccc; }
     .stat-card .label { color: #666; }
@@ -288,6 +300,21 @@ function dlClass(dateStr) {
   return 'dok';
 }
 
+function getDeadlineBadge(dateStr) {
+  if (!dateStr) return '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const parts = dateStr.split('/');
+  if (parts.length < 2) return '';
+  const m = parseInt(parts[0]) - 1, d = parseInt(parts[1]);
+  let y = parts[2] ? parseInt(parts[2]) : today.getFullYear();
+  if (y < 100) y += 2000;
+  const dt = new Date(y, m, d);
+  const diff = (dt - today) / 86400000;
+  if (diff < 0) return '<span class="deadline-badge deadline-overdue">Overdue</span>';
+  if (diff <= 7) return '<span class="deadline-badge deadline-soon">Due Soon</span>';
+  return '';
+}
+
 function prClass(dateStr) {
   const dc = dlClass(dateStr);
   if (dc === 'do') return 'ph';
@@ -313,6 +340,13 @@ function countClosingThisWeek() {
   return count;
 }
 
+function countFollowUps(data) {
+  return data.filter(r => {
+    const followUpCol = data === purchaseData ? 3 : 5;
+    return (r[followUpCol] || '').trim() !== '';
+  }).length;
+}
+
 // === RENDER PURCHASES ===
 function renderPurchases() {
   const container = document.getElementById('tab-purchases');
@@ -326,26 +360,33 @@ function renderPurchases() {
   }
 
   let html = `<div class="section-title">A-B Purchase Side <span class="count">${filtered.length} properties</span></div>`;
+  html += `<div class="action-bar">
+    <a class="action-btn" href="https://docs.google.com/spreadsheets/d/1EFmLH_5Y-BNQ5kc05zb2fg7gmvl5iya1a43NR48Xu_4/edit#gid=0" target="_blank">ð Open A-B Sheet</a>
+    <div class="follow-up-count">Follow-ups needed: <strong>${countFollowUps(filtered)}</strong></div>
+  </div>`;
   html += '<div class="table-wrapper"><table><thead><tr>';
   html += '<th>Status</th><th>Property</th><th>Title Co</th><th>Follow Up</th><th>Seller Contact</th>';
-  html += '<th>Price</th><th>Binder</th><th>Close</th><th>Est Close</th>';
-  html += '<th>EMD</th><th>Title</th><th>Muni</th><th>HUD</th><th>Cash to Close</th>';
+  html += '<th>Price</th><th>Binder</th><th>Contract</th><th>Deed Stamps</th><th>Executed HUD</th><th>Close</th><th>Est Close</th>';
+  html += '<th>EMD</th><th>Title</th><th>Muni</th><th>HUD</th><th>Funding</th><th>Cash to Close</th>';
   html += '</tr></thead><tbody>';
 
   for (const r of filtered) {
     const pc = prClass(r[22]);
+    const editUrl = `https://docs.google.com/spreadsheets/d/1EFmLH_5Y-BNQ5kc05zb2fg7gmvl5iya1a43NR48Xu_4/edit#gid=0`;
     html += `<tr class="${pc}">`;
     html += `<td>${statusBadge(r[0])}</td>`;
-    html += `<td class="pl">${r[1] || ''}</td>`;
+    html += `<td class="pl"><div class="pl-edit"><span>${r[1] || ''}</span><a class="edit-icon" href="${editUrl}" target="_blank" title="Edit in sheet">ð</a></div></td>`;
     html += `<td class="tc">${r[2] || ''}</td>`;
     html += `<td class="fu">${r[3] || ''}</td>`;
     html += `<td class="ci">${(r[4] || '').replace(/\n/g, '<br>')}</td>`;
-    html += `<td class="mn">${r[8] ? '$' + Number(r[8].replace(/[$,]/g, '')).toLocaleString() : 'â'}</td>`;
+    html += `<td class="mn">${r[4] ? '$' + Number(r[8].replace(/[$,]/g, '')).toLocaleString() : 'â'}</td>`;
     html += `<td class="mn">${r[10] ? '$' + Number(r[10].replace(/[$,]/g, '')).toLocaleString() : 'â'}</td>`;
-    html += `<td class="${dlClass(r[21])}">${r[21] || 'â'}</td>`;
-    html += `<td class="${dlClass(r[22])}">${r[22] || 'â'}</td>`;
+    html += `<td>${chk(r[7])}</td><td>${chk(r[16])}</td><td>${chk(r[18])}</td>`;
+    html += `<td class="${dlClass(r[21])}">${r[21] || 'â'}${getDeadlineBadge(r[21])}</td>`;
+    html += `<td class="${dlClass(r[22])}">${r[22] || 'â'}${getDeadlineBadge(r[22])}</td>`;
     html += `<td>${chk(r[13])}</td><td>${chk(r[14])}</td><td>${chk(r[15])}</td><td>${chk(r[17])}</td>`;
-    html += `<td>${r[29] || 'â'}</td>`;
+    html += `<td class="tc">${r[25] || 'â'}</td>`;
+    html += `<td>${r[30] || 'â'}</td>`;
     html += '</tr>';
   }
   html += '</tbody></table></div>';
@@ -365,27 +406,35 @@ function renderSales() {
   }
 
   let html = `<div class="section-title">B-C Sales / Transactions <span class="count">${filtered.length} properties</span></div>`;
+  html += `<div class="action-bar">
+    <a class="action-btn" href="https://docs.google.com/spreadsheets/d/10RbZNdVA07G5HPKbfMpce8RF4WDJu8BhSyjZk5kbHpY/edit#gid=1484254259" target="_blank">ð Open B-C Sheet</a>
+    <div class="follow-up-count">Follow-ups needed: <strong>${countFollowUps(filtered)}</strong></div>
+  </div>`;
   html += '<div class="table-wrapper"><table><thead><tr>';
   html += '<th>Status</th><th>Property</th><th>Title</th><th>Follow Up</th><th>Buyer</th>';
   html += '<th>CC</th><th>Est Close</th><th>Buyer Intro</th><th>Seller Intro</th><th>Title Intro</th>';
-  html += '<th>Lender</th><th>Funding</th><th>EMD</th><th>IPR</th><th>Title</th><th>Muni</th>';
+  html += '<th>Lender</th><th>Funding</th><th>EMD Due</th><th>EMD</th><th>Survey</th><th>Appraisal</th><th>Insp Period</th><th>IPR</th><th>Title</th><th>Muni</th><th>Prelim HUD</th>';
   html += '</tr></thead><tbody>';
 
   for (const r of filtered) {
     const pc = prClass(r[9]);
     const followUp = [r[5], r[6]].filter(Boolean).join(' â ');
+    const editUrl = `https://docs.google.com/spreadsheets/d/10RbZNdVA07G5HPKbfMpce8RF4WDJu8BhSyjZk5kbHpY/edit#gid=1484254259`;
     html += `<tr class="${pc}">`;
     html += `<td>${statusBadge(r[0])}</td>`;
-    html += `<td class="pl">${r[1] || ''}</td>`;
+    html += `<td class="pl"><div class="pl-edit"><span>${r[1] || ''}</span><a class="edit-icon" href="${editUrl}" target="_blank" title="Edit in sheet">ð</a></div></td>`;
     html += `<td class="tc">${r[3] || ''}</td>`;
     html += `<td class="fu">${followUp || r[2] || ''}</td>`;
     html += `<td class="ci">${(r[4] || '').replace(/\n/g, '<br>')}</td>`;
-    html += `<td class="${dlClass(r[8])}">${r[8] || 'â'}</td>`;
-    html += `<td class="${dlClass(r[9])}">${r[9] || 'â'}</td>`;
+    html += `<td class="${dlClass(r[4])}">${r[8] || 'â'}</td>`;
+    html += `<td class="${dlClass(r[9])}">${r[9] || 'â'}${getDeadlineBadge(r[9])}</td>`;
     html += `<td>${chk(r[10])}</td><td>${chk(r[11])}</td><td>${chk(r[12])}</td>`;
     html += `<td class="tc">${r[17] || 'â'}</td>`;
     html += `<td class="tc">${r[20] || 'â'}</td>`;
-    html += `<td>${chk(r[24])}</td><td>${chk(r[26])}</td><td>${chk(r[27])}</td><td>${chk(r[28])}</td>`;
+    html += `<td class="${dlClass(r[24])}">${r[24] || 'â'}${getDeadlineBadge(r[24])}</td>`;
+    html += `<td>${chk(r[25])}</td><td>${chk(r[18])}</td><td>${chk(r[19])}</td>`;
+    html += `<td class="${dlClass(r[22])}">${r[22] || 'â'}</td>`;
+    html += `<td>${chk(r[26])}</td><td>${chk(r[27])}</td><td>${chk(r[28])}</td><td>${chk(r[29])}</td>`;
     html += '</tr>';
   }
   html += '</tbody></table></div>';
@@ -475,15 +524,15 @@ async function loadAllData(silent) {
     const pRows = parseCSV(pCSV);
     const sRows = parseCSV(sCSV);
 
-    purchaseData = pRows.slice(2);
-    salesData = sRows.slice(2);
+    purchaseData = pRows.slice(1);
+    salesData = sRows.slice(1);
 
     render();
     updateStats();
 
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    document.getElementById('lastUpdated').textContent = `Live \u2014 ${timeStr}`;
+    document.getElementById('lastUpdated').textContent = `Live â ${timeStr}`;
     if (silent) showToast('Dashboard refreshed');
 
   } catch (err) {
