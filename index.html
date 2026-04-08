@@ -418,7 +418,6 @@ const AB_PIPELINE = [
   { name: 'Muni', col: 15, type: 'check' },
   { name: 'Deed Stamps', col: 16, type: 'check' },
   { name: 'Prelim HUD', col: 17, type: 'check' },
-  { name: 'Funding', col: 25, type: 'value' },
   { name: 'Executed HUD', col: 18, type: 'check' },
   { name: 'Cash to Close', col: 30, type: 'value' },
   { name: 'Closing', col: 21, type: 'date' }
@@ -435,7 +434,6 @@ const BC_PIPELINE = [
   { name: 'Title', col: 27, type: 'check' },
   { name: 'Muni', col: 28, type: 'check' },
   { name: 'Prelim HUD', col: 29, type: 'check' },
-  { name: 'Funding', col: 20, type: 'value' },
   { name: 'Closing', col: 31, type: 'check' }
 ];
 
@@ -447,7 +445,6 @@ const AB_NEXT_ACTIONS = {
   'Muni': 'Order municipal search',
   'Deed Stamps': 'Get deed stamps',
   'Prelim HUD': 'Request preliminary HUD',
-  'Funding': 'Secure funding',
   'Executed HUD': 'Get HUD executed — then schedule cleanout/dumpsters/pics/lockbox',
   'Cash to Close': 'Confirm cash to close amount',
   'Closing': 'Schedule closing date'
@@ -465,7 +462,6 @@ const BC_NEXT_ACTIONS = {
   'Title': 'Confirm title clearance',
   'Muni': 'Order municipal search',
   'Prelim HUD': 'Request preliminary HUD',
-  'Funding': 'Confirm funding secured',
   'Closing': 'Schedule closing'
 };
 
@@ -545,7 +541,7 @@ function renderPurchases() {
   html += '<div class="table-wrapper"><table><thead><tr>';
   html += '<th>Status</th><th>Property</th><th>Title Co</th><th>Follow Up</th><th>Seller Contact</th>';
   html += '<th>Price</th><th>Binder</th><th>Contract</th><th>Deed Stamps</th><th>Executed HUD</th><th>Close</th><th>Est Close</th>';
-  html += '<th>EMD</th><th>Title</th><th>Muni</th><th>HUD</th><th>Funding</th><th>Cash to Close</th>';
+  html += '<th>EMD</th><th>Title</th><th>Muni</th><th>HUD</th><th>Cash to Close</th>';
   html += '<th>Progress</th><th>Current Step</th><th>What\'s Next</th>';
   html += '</tr></thead><tbody>';
 
@@ -564,7 +560,6 @@ function renderPurchases() {
     html += `<td class="${dlClass(r[21])}">${r[21] || '—'}${getDeadlineBadge(r[21])}</td>`;
     html += `<td class="${dlClass(r[22])}">${r[22] || '—'}${getDeadlineBadge(r[22])}</td>`;
     html += `<td>${chk(r[13])}</td><td>${chk(r[14])}</td><td>${chk(r[15])}</td><td>${chk(r[17])}</td>`;
-    html += `<td class="tc">${r[25] || '—'}</td>`;
     html += `<td>${r[30] || '—'}</td>`;
     html += `<td>${renderPipelineBar(r, AB_PIPELINE)}</td>`;
     html += `<td>${renderCurrentStep(r, AB_PIPELINE, AB_NEXT_ACTIONS)}</td>`;
@@ -595,7 +590,7 @@ function renderSales() {
   html += '<div class="table-wrapper"><table><thead><tr>';
   html += '<th>Status</th><th>Property</th><th>Title</th><th>Follow Up</th><th>Buyer</th>';
   html += '<th>CC</th><th>Est Close</th><th>Buyer Intro</th><th>Seller Intro</th><th>Title Intro</th>';
-  html += '<th>Lender</th><th>Funding</th><th>EMD Due</th><th>EMD</th><th>Survey</th><th>Appraisal</th><th>Insp Period</th><th>IPR</th><th>Title</th><th>Muni</th><th>Prelim HUD</th>';
+  html += '<th>Lender</th><th>EMD Due</th><th>EMD</th><th>Survey</th><th>Appraisal</th><th>Insp Period</th><th>IPR</th><th>Title</th><th>Muni</th><th>Prelim HUD</th>';
   html += '<th>Progress</th><th>Current Step</th><th>What\'s Next</th>';
   html += '</tr></thead><tbody>';
 
@@ -613,7 +608,6 @@ function renderSales() {
     html += `<td class="${dlClass(r[9])}">${r[9] || '—'}${getDeadlineBadge(r[9])}</td>`;
     html += `<td>${chk(r[10])}</td><td>${chk(r[11])}</td><td>${chk(r[12])}</td>`;
     html += `<td class="tc">${r[17] || '—'}</td>`;
-    html += `<td class="tc">${r[20] || '—'}</td>`;
     html += `<td class="${dlClass(r[24])}">${r[24] || '—'}${getDeadlineBadge(r[24])}</td>`;
     html += `<td>${chk(r[25])}</td><td>${chk(r[18])}</td><td>${chk(r[19])}</td>`;
     html += `<td class="${dlClass(r[22])}">${r[22] || '—'}</td>`;
