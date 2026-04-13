@@ -1,194 +1,229 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CashGeeks TC Dashboard</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð°</text></svg>">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e1e4e8; min-height: 100vh; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e1e4e8; min-height: 100vh; }
+.header { background: linear-gradient(135deg, #1a1f2e 0%, #0f1117 100%); border-bottom: 1px solid #2d333b; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 22px; font-weight: 700; color: #58a6ff; display: flex; align-items: center; gap: 10px; }
+.header h1 .logo { font-size: 26px; }
+.header .subtitle { color: #8b949e; font-size: 13px; margin-top: 2px; }
+.header-right { display: flex; align-items: center; gap: 16px; }
+.last-updated { color: #8b949e; font-size: 12px; }
+.auto-refresh-label { color: #8b949e; font-size: 11px; display: flex; align-items: center; gap: 4px; }
+.auto-refresh-label input { accent-color: #238636; }
+.refresh-btn { background: #238636; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.2s; }
+.refresh-btn:hover { background: #2ea043; }
+.refresh-btn:active { transform: scale(0.97); }
+.refresh-btn.loading { opacity: 0.6; pointer-events: none; }
+.stats-bar { display: flex; gap: 12px; padding: 16px 32px; background: #161b22; border-bottom: 1px solid #2d333b; flex-wrap: wrap; }
+.stat-card { background: #1c2128; border: 1px solid #2d333b; border-radius: 8px; padding: 12px 20px; min-width: 130px; flex: 1; max-width: 180px; transition: border-color 0.2s; cursor: default; }
+.stat-card:hover { border-color: #484f58; }
+.stat-card .label { font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-card .value { font-size: 24px; font-weight: 700; margin-top: 4px; }
+.stat-card .value.green { color: #3fb950; }
+.stat-card .value.yellow { color: #d29922; }
+.stat-card .value.red { color: #f85149; }
+.stat-card .value.blue { color: #58a6ff; }
+.tabs { display: flex; gap: 0; padding: 0 32px; background: #161b22; border-bottom: 1px solid #2d333b; }
+.tab { padding: 12px 24px; cursor: pointer; font-size: 13px; font-weight: 600; color: #8b949e; border-bottom: 2px solid transparent; transition: all 0.2s; user-select: none; }
+.tab:hover { color: #e1e4e8; background: rgba(255,255,255,0.02); }
+.tab.active { color: #58a6ff; border-bottom-color: #58a6ff; }
+.tab .tab-count { background: #30363d; color: #8b949e; font-size: 10px; padding: 1px 6px; border-radius: 10px; margin-left: 6px; }
+.filter-bar { display: flex; gap: 8px; padding: 12px 32px; background: #0f1117; flex-wrap: wrap; align-items: center; border-bottom: 1px solid #1c2128; }
+.filter-btn { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.15s; }
+.filter-btn:hover { background: #30363d; }
+.filter-btn.active { background: #1f6feb; border-color: #1f6feb; color: #fff; }
+.search-input { background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; padding: 6px 12px; border-radius: 6px; font-size: 12px; width: 220px; outline: none; transition: border-color 0.2s; }
+.search-input:focus { border-color: #58a6ff; }
+.search-input::placeholder { color: #484f58; }
+.content { padding: 20px 32px; }
+.section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #c9d1d9; display: flex; align-items: center; gap: 8px; }
+.section-title .count { background: #30363d; color: #8b949e; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+.action-bar { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+.action-btn { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 8px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.action-btn:hover { background: #30363d; border-color: #58a6ff; }
+.action-bar .follow-up-count { font-size: 12px; color: #8b949e; background: #1c2128; padding: 6px 12px; border-radius: 6px; border: 1px solid #2d333b; }
+.table-wrapper { overflow-x: auto; margin-bottom: 32px; border-radius: 8px; border: 1px solid #2d333b; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th { background: #1c2128; color: #8b949e; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; padding: 10px 12px; text-align: left; white-space: nowrap; border-bottom: 1px solid #2d333b; position: sticky; top: 0; z-index: 2; }
+tbody td { padding: 10px 12px; border-bottom: 1px solid #1c2128; vertical-align: top; }
+tbody tr { background: #0d1117; transition: background 0.15s; }
+tbody tr:hover { background: #161b22; }
+.sb { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.s-uc { background: #1f3a2e; color: #3fb950; } .s-pm { background: #2d2a0f; color: #d29922; }
+.s-mk { background: #2a1f3a; color: #bc8cff; } .s-ucs { background: #1a2a4a; color: #58a6ff; }
+.s-cw { background: #2d2a0f; color: #d29922; } .s-cgo { background: #1f3a2e; color: #3fb950; }
+.s-ws { background: #2a2a1f; color: #e3b341; } .s-dc { background: #1a2a4a; color: #58a6ff; }
+.s-mls { background: #2a1f3a; color: #bc8cff; } .s-ss { background: #1f3a2e; color: #3fb950; }
+.s-cp { background: #1c2128; color: #8b949e; } .s-ft { background: #3b1f1f; color: #f85149; }
+.s-lb { background: #3b2f1f; color: #d29922; } .s-jv { background: #1a2a4a; color: #58a6ff; }
+.s-ucp { background: #2a1f2a; color: #d2a8ff; }
+.q2-metrics { padding: 16px 32px; background: #111820; border-bottom: 1px solid #2d333b; }
+.q2-header { font-size: 13px; font-weight: 700; color: #d2a8ff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+.q2-header .toggle { font-size: 10px; transition: transform 0.2s; }
+.q2-header .toggle.collapsed { transform: rotate(-90deg); }
+.q2-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.q2-card { background: #1c2128; border: 1px solid #2d333b; border-radius: 8px; padding: 16px; }
+.q2-card-title { font-size: 13px; font-weight: 700; color: #c9d1d9; margin-bottom: 4px; }
+.q2-card-sub { font-size: 11px; color: #8b949e; margin-bottom: 12px; }
+.q2-score { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+.q2-score.good { color: #3fb950; } .q2-score.warn { color: #d29922; } .q2-score.bad { color: #f85149; }
+.q2-bar-bg { background: #21262d; border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 12px; }
+.q2-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+.q2-bar-fill.good { background: #3fb950; } .q2-bar-fill.warn { background: #d29922; } .q2-bar-fill.bad { background: #f85149; }
+.q2-list { font-size: 12px; line-height: 1.8; }
+.q2-list .q2-item { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; border-bottom: 1px solid #1c2128; }
+.q2-list .q2-item:last-child { border-bottom: none; }
+.q2-list .q2-prop { color: #58a6ff; font-weight: 600; }
+.q2-list .q2-done { color: #3fb950; font-weight: 700; }
+.q2-list .q2-miss { color: #f85149; font-weight: 700; }
+.ck { color: #3fb950; font-weight: bold; } .un { color: #484f58; } .wr { color: #d29922; font-weight: bold; }
+.fu { max-width: 300px; font-size: 12px; line-height: 1.4; color: #c9d1d9; }
+.pl { color: #58a6ff; font-weight: 600; white-space: nowrap; }
+.pl-edit { display: flex; align-items: center; gap: 6px; }
+.edit-icon { color: #8b949e; text-decoration: none; font-size: 12px; cursor: pointer; }
+.edit-icon:hover { color: #58a6ff; }
+.tc { color: #8b949e; font-size: 12px; }
+.ci { font-size: 11px; color: #8b949e; max-width: 200px; }
+.mn { font-family: 'SF Mono', Consolas, monospace; color: #3fb950; white-space: nowrap; }
+.do { color: #f85149; font-weight: 700; } .ds { color: #d29922; font-weight: 600; } .dok { color: #8b949e; }
+.ph { border-left: 3px solid #f85149; } .pmd { border-left: 3px solid #d29922; }
+.deadline-badge { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; margin-left: 4px; white-space: nowrap; display: inline-block; }
+.deadline-overdue { background: #3b1f1f; color: #f85149; }
+.deadline-soon { background: #3b2f1f; color: #d29922; }
+.pipeline-bar { display: flex; gap: 2px; align-items: center; min-width: 200px; }
+.pipeline-step { height: 8px; flex: 1; border-radius: 4px; position: relative; cursor: default; }
+.pipeline-step.done { background: #238636; }
+.pipeline-step.current { background: #d29922; animation: pulse-step 2s ease-in-out infinite; }
+.pipeline-step.upcoming { background: #21262d; }
+@keyframes pulse-step { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+.pipeline-step .step-tip { display: none; position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); background: #1c2128; border: 1px solid #484f58; color: #e1e4e8; padding: 4px 8px; border-radius: 4px; font-size: 10px; white-space: nowrap; z-index: 10; pointer-events: none; }
+.pipeline-step:hover .step-tip { display: block; }
+.step-label { font-size: 11px; white-space: nowrap; }
+.step-current { color: #d29922; font-weight: 600; }
+.step-next { color: #8b949e; font-size: 11px; }
+.step-next-action { color: #58a6ff; font-size: 11px; font-weight: 500; }
+.loading { text-align: center; padding: 60px 20px; color: #8b949e; }
+.loading .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid #30363d; border-top-color: #58a6ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.error { text-align: center; padding: 60px 20px; color: #f85149; }
+.error a { color: #58a6ff; }
+.error .steps { text-align: left; max-width: 500px; margin: 20px auto; color: #c9d1d9; font-size: 13px; line-height: 1.8; }
+.error .steps li { margin-bottom: 4px; }
+.toast { position: fixed; bottom: 24px; right: 24px; background: #1c2128; border: 1px solid #2d333b; color: #c9d1d9; padding: 12px 20px; border-radius: 8px; font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 100; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-left: 3px solid #3fb950; }
+.empty-state { text-align: center; padding: 40px 20px; color: #484f58; font-size: 14px; }
 
-  .header { background: linear-gradient(135deg, #1a1f2e 0%, #0f1117 100%); border-bottom: 1px solid #2d333b; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
-  .header h1 { font-size: 22px; font-weight: 700; color: #58a6ff; display: flex; align-items: center; gap: 10px; }
-  .header h1 .logo { font-size: 26px; }
-  .header .subtitle { color: #8b949e; font-size: 13px; margin-top: 2px; }
-  .header-right { display: flex; align-items: center; gap: 16px; }
-  .last-updated { color: #8b949e; font-size: 12px; }
-  .auto-refresh-label { color: #8b949e; font-size: 11px; display: flex; align-items: center; gap: 4px; }
-  .auto-refresh-label input { accent-color: #238636; }
-  .refresh-btn { background: #238636; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.2s; }
-  .refresh-btn:hover { background: #2ea043; }
-  .refresh-btn:active { transform: scale(0.97); }
-  .refresh-btn.loading { opacity: 0.6; pointer-events: none; }
+/* ===== UPDATE MODAL STYLES ===== */
+.update-btn { background: #1f6feb; border: 1px solid #388bfd; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: 600; transition: all 0.15s; margin-left: 4px; }
+.update-btn:hover { background: #388bfd; }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 200; justify-content: center; align-items: flex-start; padding-top: 60px; overflow-y: auto; }
+.modal-overlay.active { display: flex; }
+.modal { background: #161b22; border: 1px solid #30363d; border-radius: 12px; width: 720px; max-width: 95vw; max-height: 85vh; overflow-y: auto; box-shadow: 0 16px 48px rgba(0,0,0,0.6); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #2d333b; }
+.modal-header h2 { font-size: 16px; color: #e1e4e8; font-weight: 700; }
+.modal-header .modal-prop { color: #58a6ff; font-size: 13px; margin-top: 2px; }
+.modal-close { background: none; border: none; color: #8b949e; font-size: 20px; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+.modal-close:hover { background: #21262d; color: #e1e4e8; }
+.modal-body { padding: 20px; }
+.modal-tabs { display: flex; gap: 0; margin-bottom: 16px; border-bottom: 1px solid #2d333b; }
+.modal-tab { padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600; color: #8b949e; border-bottom: 2px solid transparent; transition: all 0.2s; }
+.modal-tab:hover { color: #e1e4e8; }
+.modal-tab.active { color: #58a6ff; border-bottom-color: #58a6ff; }
+.modal-textarea { width: 100%; min-height: 180px; background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; border-radius: 6px; padding: 12px; font-size: 13px; font-family: inherit; resize: vertical; outline: none; line-height: 1.5; }
+.modal-textarea:focus { border-color: #58a6ff; }
+.modal-textarea::placeholder { color: #484f58; }
+.gmail-search-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.gmail-search-input { flex: 1; background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; border-radius: 6px; padding: 8px 12px; font-size: 13px; outline: none; }
+.gmail-search-input:focus { border-color: #58a6ff; }
+.gmail-search-btn { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 8px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+.gmail-search-btn:hover { background: #30363d; border-color: #58a6ff; }
+.gmail-results { max-height: 200px; overflow-y: auto; border: 1px solid #2d333b; border-radius: 6px; margin-bottom: 12px; }
+.gmail-result-item { padding: 10px 12px; border-bottom: 1px solid #1c2128; cursor: pointer; transition: background 0.15s; }
+.gmail-result-item:hover { background: #1c2128; }
+.gmail-result-item:last-child { border-bottom: none; }
+.gmail-result-subject { color: #e1e4e8; font-size: 13px; font-weight: 600; }
+.gmail-result-from { color: #8b949e; font-size: 11px; margin-top: 2px; }
+.gmail-result-snippet { color: #8b949e; font-size: 11px; margin-top: 4px; }
+.generate-btn { background: #238636; border: none; color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 12px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.generate-btn:hover { background: #2ea043; }
+.generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.generate-btn .btn-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
+.summary-section { margin-top: 20px; display: none; }
+.summary-section.visible { display: block; }
+.summary-label { font-size: 12px; font-weight: 700; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.summary-box { background: #0d1117; border: 1px solid #2d333b; border-radius: 6px; padding: 14px; font-size: 13px; line-height: 1.6; color: #e1e4e8; max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
+.summary-box h4 { color: #58a6ff; font-size: 13px; margin: 12px 0 6px 0; }
+.summary-box h4:first-child { margin-top: 0; }
+.summary-box ul { margin: 4px 0 4px 18px; }
+.summary-box li { margin: 2px 0; }
+.follow-up-edit { margin-top: 16px; }
+.follow-up-edit label { font-size: 12px; font-weight: 700; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
+.follow-up-input { width: 100%; background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; border-radius: 6px; padding: 10px 12px; font-size: 13px; font-family: inherit; resize: vertical; min-height: 60px; outline: none; }
+.follow-up-input:focus { border-color: #58a6ff; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 20px; border-top: 1px solid #2d333b; }
+.modal-footer .cancel-btn { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 600; }
+.modal-footer .cancel-btn:hover { background: #30363d; }
+.modal-footer .save-btn { background: #238636; border: none; color: #fff; padding: 8px 20px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 700; }
+.modal-footer .save-btn:hover { background: #2ea043; }
+.modal-footer .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  .stats-bar { display: flex; gap: 12px; padding: 16px 32px; background: #161b22; border-bottom: 1px solid #2d333b; flex-wrap: wrap; }
-  .stat-card { background: #1c2128; border: 1px solid #2d333b; border-radius: 8px; padding: 12px 20px; min-width: 130px; flex: 1; max-width: 180px; transition: border-color 0.2s; cursor: default; }
-  .stat-card:hover { border-color: #484f58; }
-  .stat-card .label { font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; }
-  .stat-card .value { font-size: 24px; font-weight: 700; margin-top: 4px; }
-  .stat-card .value.green { color: #3fb950; }
-  .stat-card .value.yellow { color: #d29922; }
-  .stat-card .value.red { color: #f85149; }
-  .stat-card .value.blue { color: #58a6ff; }
+/* Settings gear */
+.settings-btn { background: none; border: 1px solid #30363d; color: #8b949e; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 16px; transition: all 0.2s; }
+.settings-btn:hover { color: #e1e4e8; border-color: #484f58; }
+.settings-modal { background: #161b22; border: 1px solid #30363d; border-radius: 12px; width: 520px; max-width: 95vw; box-shadow: 0 16px 48px rgba(0,0,0,0.6); }
+.settings-field { margin-bottom: 16px; }
+.settings-field label { display: block; font-size: 12px; font-weight: 700; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.settings-field input { width: 100%; background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; border-radius: 6px; padding: 8px 12px; font-size: 13px; outline: none; }
+.settings-field input:focus { border-color: #58a6ff; }
+.settings-field .hint { font-size: 11px; color: #484f58; margin-top: 4px; }
+.status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.status-dot.connected { background: #3fb950; }
+.status-dot.disconnected { background: #f85149; }
 
-  .tabs { display: flex; gap: 0; padding: 0 32px; background: #161b22; border-bottom: 1px solid #2d333b; }
-  .tab { padding: 12px 24px; cursor: pointer; font-size: 13px; font-weight: 600; color: #8b949e; border-bottom: 2px solid transparent; transition: all 0.2s; user-select: none; }
-  .tab:hover { color: #e1e4e8; background: rgba(255,255,255,0.02); }
-  .tab.active { color: #58a6ff; border-bottom-color: #58a6ff; }
-  .tab .tab-count { background: #30363d; color: #8b949e; font-size: 10px; padding: 1px 6px; border-radius: 10px; margin-left: 6px; }
-
-  .filter-bar { display: flex; gap: 8px; padding: 12px 32px; background: #0f1117; flex-wrap: wrap; align-items: center; border-bottom: 1px solid #1c2128; }
-  .filter-btn { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.15s; }
-  .filter-btn:hover { background: #30363d; }
-  .filter-btn.active { background: #1f6feb; border-color: #1f6feb; color: #fff; }
-  .search-input { background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; padding: 6px 12px; border-radius: 6px; font-size: 12px; width: 220px; outline: none; transition: border-color 0.2s; }
-  .search-input:focus { border-color: #58a6ff; }
-  .search-input::placeholder { color: #484f58; }
-
-  .content { padding: 20px 32px; }
-  .section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #c9d1d9; display: flex; align-items: center; gap: 8px; }
-  .section-title .count { background: #30363d; color: #8b949e; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
-
-  .action-bar { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
-  .action-btn { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 8px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-  .action-btn:hover { background: #30363d; border-color: #58a6ff; }
-  .action-bar .follow-up-count { font-size: 12px; color: #8b949e; background: #1c2128; padding: 6px 12px; border-radius: 6px; border: 1px solid #2d333b; }
-
-  .table-wrapper { overflow-x: auto; margin-bottom: 32px; border-radius: 8px; border: 1px solid #2d333b; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead th { background: #1c2128; color: #8b949e; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; padding: 10px 12px; text-align: left; white-space: nowrap; border-bottom: 1px solid #2d333b; position: sticky; top: 0; z-index: 2; }
-  tbody td { padding: 10px 12px; border-bottom: 1px solid #1c2128; vertical-align: top; }
-  tbody tr { background: #0d1117; transition: background 0.15s; }
-  tbody tr:hover { background: #161b22; }
-
-  .sb { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-  .s-uc { background: #1f3a2e; color: #3fb950; }
-  .s-pm { background: #2d2a0f; color: #d29922; }
-  .s-mk { background: #2a1f3a; color: #bc8cff; }
-  .s-ucs { background: #1a2a4a; color: #58a6ff; }
-  .s-cw { background: #2d2a0f; color: #d29922; }
-  .s-cgo { background: #1f3a2e; color: #3fb950; }
-  .s-ws { background: #2a2a1f; color: #e3b341; }
-  .s-dc { background: #1a2a4a; color: #58a6ff; }
-  .s-mls { background: #2a1f3a; color: #bc8cff; }
-  .s-ss { background: #1f3a2e; color: #3fb950; }
-  .s-cp { background: #1c2128; color: #8b949e; }
-  .s-ft { background: #3b1f1f; color: #f85149; }
-  .s-lb { background: #3b2f1f; color: #d29922; }
-  .s-jv { background: #1a2a4a; color: #58a6ff; }
-  .s-ucp { background: #2a1f2a; color: #d2a8ff; }
-
-  .q2-metrics { padding: 16px 32px; background: #111820; border-bottom: 1px solid #2d333b; }
-  .q2-header { font-size: 13px; font-weight: 700; color: #d2a8ff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
-  .q2-header .toggle { font-size: 10px; transition: transform 0.2s; }
-  .q2-header .toggle.collapsed { transform: rotate(-90deg); }
-  .q2-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .q2-card { background: #1c2128; border: 1px solid #2d333b; border-radius: 8px; padding: 16px; }
-  .q2-card-title { font-size: 13px; font-weight: 700; color: #c9d1d9; margin-bottom: 4px; }
-  .q2-card-sub { font-size: 11px; color: #8b949e; margin-bottom: 12px; }
-  .q2-score { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
-  .q2-score.good { color: #3fb950; }
-  .q2-score.warn { color: #d29922; }
-  .q2-score.bad { color: #f85149; }
-  .q2-bar-bg { background: #21262d; border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 12px; }
-  .q2-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
-  .q2-bar-fill.good { background: #3fb950; }
-  .q2-bar-fill.warn { background: #d29922; }
-  .q2-bar-fill.bad { background: #f85149; }
-  .q2-list { font-size: 12px; line-height: 1.8; }
-  .q2-list .q2-item { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; border-bottom: 1px solid #1c2128; }
-  .q2-list .q2-item:last-child { border-bottom: none; }
-  .q2-list .q2-prop { color: #58a6ff; font-weight: 600; }
-  .q2-list .q2-done { color: #3fb950; font-weight: 700; }
-  .q2-list .q2-miss { color: #f85149; font-weight: 700; }
-
-  .ck { color: #3fb950; font-weight: bold; }
-  .un { color: #484f58; }
-  .wr { color: #d29922; font-weight: bold; }
-  .fu { max-width: 300px; font-size: 12px; line-height: 1.4; color: #c9d1d9; }
-  .pl { color: #58a6ff; font-weight: 600; white-space: nowrap; }
-  .pl-edit { display: flex; align-items: center; gap: 6px; }
-  .edit-icon { color: #8b949e; text-decoration: none; font-size: 12px; cursor: pointer; }
-  .edit-icon:hover { color: #58a6ff; }
-  .tc { color: #8b949e; font-size: 12px; }
-  .ci { font-size: 11px; color: #8b949e; max-width: 200px; }
-  .mn { font-family: 'SF Mono', Consolas, monospace; color: #3fb950; white-space: nowrap; }
-  .do { color: #f85149; font-weight: 700; }
-  .ds { color: #d29922; font-weight: 600; }
-  .dok { color: #8b949e; }
-
-  .ph { border-left: 3px solid #f85149; }
-  .pmd { border-left: 3px solid #d29922; }
-
-  .deadline-badge { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; margin-left: 4px; white-space: nowrap; display: inline-block; }
-  .deadline-overdue { background: #3b1f1f; color: #f85149; }
-  .deadline-soon { background: #3b2f1f; color: #d29922; }
-
-  .pipeline-bar { display: flex; gap: 2px; align-items: center; min-width: 200px; }
-  .pipeline-step { height: 8px; flex: 1; border-radius: 4px; position: relative; cursor: default; }
-  .pipeline-step.done { background: #238636; }
-  .pipeline-step.current { background: #d29922; animation: pulse-step 2s ease-in-out infinite; }
-  .pipeline-step.upcoming { background: #21262d; }
-  @keyframes pulse-step { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-  .pipeline-step .step-tip { display: none; position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); background: #1c2128; border: 1px solid #484f58; color: #e1e4e8; padding: 4px 8px; border-radius: 4px; font-size: 10px; white-space: nowrap; z-index: 10; pointer-events: none; }
-  .pipeline-step:hover .step-tip { display: block; }
-  .step-label { font-size: 11px; white-space: nowrap; }
-  .step-current { color: #d29922; font-weight: 600; }
-  .step-next { color: #8b949e; font-size: 11px; }
-  .step-next-action { color: #58a6ff; font-size: 11px; font-weight: 500; }
-
-  .loading { text-align: center; padding: 60px 20px; color: #8b949e; }
-  .loading .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid #30363d; border-top-color: #58a6ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .error { text-align: center; padding: 60px 20px; color: #f85149; }
-  .error a { color: #58a6ff; }
-  .error .steps { text-align: left; max-width: 500px; margin: 20px auto; color: #c9d1d9; font-size: 13px; line-height: 1.8; }
-  .error .steps li { margin-bottom: 4px; }
-
-  .toast { position: fixed; bottom: 24px; right: 24px; background: #1c2128; border: 1px solid #2d333b; color: #c9d1d9; padding: 12px 20px; border-radius: 8px; font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 100; }
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast.success { border-left: 3px solid #3fb950; }
-
-  .empty-state { text-align: center; padding: 40px 20px; color: #484f58; font-size: 14px; }
-
-  @media (max-width: 768px) {
-    .header { padding: 16px; flex-direction: column; gap: 12px; align-items: flex-start; }
-    .stats-bar { padding: 12px 16px; gap: 8px; }
-    .stat-card { min-width: 100px; padding: 10px 14px; }
-    .stat-card .value { font-size: 20px; }
-    .filter-bar { padding: 10px 16px; }
-    .search-input { width: 100%; }
-    .content { padding: 16px; }
-    .tabs { padding: 0 16px; }
-    .tab { padding: 10px 14px; font-size: 12px; }
-  }
-
-  @media print {
-    body { background: #fff; color: #000; }
-    .header { background: #fff; border-bottom: 2px solid #000; }
-    .header h1 { color: #000; }
-    .refresh-btn, .auto-refresh-label, .filter-bar, .action-bar { display: none !important; }
-    .stats-bar { background: #fff; }
-    .stat-card { background: #f5f5f5; border-color: #ccc; }
-    .stat-card .label { color: #666; }
-    .stat-card .value { color: #000 !important; }
-    tbody tr { background: #fff; }
-    thead th { background: #f0f0f0; color: #333; }
-    .sb { border: 1px solid #ccc; }
-    .content { padding: 10px; }
-    .table-wrapper { border-color: #ccc; }
-  }
+@media (max-width: 768px) {
+  .header { padding: 16px; flex-direction: column; gap: 12px; align-items: flex-start; }
+  .stats-bar { padding: 12px 16px; gap: 8px; }
+  .stat-card { min-width: 100px; padding: 10px 14px; }
+  .stat-card .value { font-size: 20px; }
+  .filter-bar { padding: 10px 16px; }
+  .search-input { width: 100%; }
+  .content { padding: 16px; }
+  .tabs { padding: 0 16px; }
+  .tab { padding: 10px 14px; font-size: 12px; }
+  .modal { width: 100%; margin: 0 8px; }
+}
+@media print {
+  body { background: #fff; color: #000; }
+  .header { background: #fff; border-bottom: 2px solid #000; }
+  .header h1 { color: #000; }
+  .refresh-btn, .auto-refresh-label, .filter-bar, .action-bar { display: none !important; }
+  .stats-bar { background: #fff; }
+  .stat-card { background: #f5f5f5; border-color: #ccc; }
+  .stat-card .label { color: #666; }
+  .stat-card .value { color: #000 !important; }
+  tbody tr { background: #fff; }
+  thead th { background: #f0f0f0; color: #333; }
+  .sb { border: 1px solid #ccc; }
+  .content { padding: 10px; }
+  .table-wrapper { border-color: #ccc; }
+}
 </style>
 </head>
 <body>
-
 <div class="header">
   <div>
     <h1><span class="logo">CG</span> CashGeeks TC Dashboard</h1>
-    <div class="subtitle">Regency Litho Assets LLC — Live Transaction Tracker</div>
+    <div class="subtitle">Regency Litho Assets LLC â Live Transaction Tracker</div>
   </div>
   <div class="header-right">
+    <button class="settings-btn" onclick="openSettings()" title="Settings">&#9881;</button>
     <label class="auto-refresh-label">
       <input type="checkbox" id="autoRefresh" checked onchange="toggleAutoRefresh()"> Auto-refresh (5 min)
     </label>
@@ -198,32 +233,32 @@
 </div>
 
 <div class="stats-bar" id="statsBar">
-  <div class="stat-card"><div class="label">Total Active</div><div class="value blue" id="statActive">—</div></div>
-  <div class="stat-card"><div class="label">Under Contract</div><div class="value green" id="statUC">—</div></div>
-  <div class="stat-card"><div class="label">Pre-Marketing</div><div class="value yellow" id="statPM">—</div></div>
-  <div class="stat-card"><div class="label">Closing This Week</div><div class="value red" id="statUrgent">—</div></div>
-  <div class="stat-card"><div class="label">Completed</div><div class="value" style="color:#8b949e" id="statDone">—</div></div>
-  <div class="stat-card" style="border-color:#d2a8ff40"><div class="label" style="color:#d2a8ff">Payout Tracker</div><div class="value" id="statPayout">—</div></div>
-  <div class="stat-card" style="border-color:#d2a8ff40"><div class="label" style="color:#d2a8ff">DR228 Filed</div><div class="value" id="statDR228">—</div></div>
+  <div class="stat-card"><div class="label">Total Active</div><div class="value blue" id="statActive">â</div></div>
+  <div class="stat-card"><div class="label">Under Contract</div><div class="value green" id="statUC">â</div></div>
+  <div class="stat-card"><div class="label">Pre-Marketing</div><div class="value yellow" id="statPM">â</div></div>
+  <div class="stat-card"><div class="label">Closing This Week</div><div class="value red" id="statUrgent">â</div></div>
+  <div class="stat-card"><div class="label">Completed</div><div class="value" style="color:#8b949e" id="statDone">â</div></div>
+  <div class="stat-card" style="border-color:#d2a8ff40"><div class="label" style="color:#d2a8ff">Payout Tracker</div><div class="value" id="statPayout">â</div></div>
+  <div class="stat-card" style="border-color:#d2a8ff40"><div class="label" style="color:#d2a8ff">DR228 Filed</div><div class="value" id="statDR228">â</div></div>
 </div>
 
 <div class="q2-metrics" id="q2Section">
   <div class="q2-header" onclick="toggleQ2()">
-    <span class="toggle" id="q2Toggle">▼</span> Q2 Personal Metrics — Matt
+    <span class="toggle" id="q2Toggle">&#9660;</span> Q2 Personal Metrics â Matt
   </div>
   <div id="q2Body">
     <div class="q2-grid">
       <div class="q2-card">
         <div class="q2-card-title">Payout Tracker Completion</div>
         <div class="q2-card-sub">Executed HUD received + Pre-closing game plan documented</div>
-        <div class="q2-score" id="q2PayoutScore">—</div>
+        <div class="q2-score" id="q2PayoutScore">â</div>
         <div class="q2-bar-bg"><div class="q2-bar-fill" id="q2PayoutBar" style="width:0%"></div></div>
         <div class="q2-list" id="q2PayoutList"></div>
       </div>
       <div class="q2-card">
-        <div class="q2-card-title">DR228 Deed Stamps — Not Recorded</div>
-        <div class="q2-card-sub">DR228 filled out & sent to title — title reports to Dept of Revenue</div>
-        <div class="q2-score" id="q2DR228Score">—</div>
+        <div class="q2-card-title">DR228 Deed Stamps â Not Recorded</div>
+        <div class="q2-card-sub">DR228 filled out &amp; sent to title â title reports to Dept of Revenue</div>
+        <div class="q2-score" id="q2DR228Score">â</div>
         <div class="q2-bar-bg"><div class="q2-bar-fill" id="q2DR228Bar" style="width:0%"></div></div>
         <div class="q2-list" id="q2DR228List"></div>
       </div>
@@ -258,17 +293,81 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- UPDATE MODAL -->
+<div class="modal-overlay" id="updateModalOverlay" onclick="if(event.target===this)closeUpdateModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>Update Property</h2>
+        <div class="modal-prop" id="updateModalProp"></div>
+      </div>
+      <button class="modal-close" onclick="closeUpdateModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-tabs">
+        <div class="modal-tab active" onclick="switchInputTab('paste',this)">Paste Email</div>
+        <div class="modal-tab" onclick="switchInputTab('gmail',this)">Pull from Gmail</div>
+      </div>
+      <div id="inputPaste">
+        <textarea class="modal-textarea" id="emailTextInput" placeholder="Paste the full email text here... Include the entire email chain for the most thorough summary."></textarea>
+      </div>
+      <div id="inputGmail" style="display:none;">
+        <div class="gmail-search-row">
+          <input type="text" class="gmail-search-input" id="gmailSearchQuery" placeholder="Search Gmail by subject, sender, or keyword...">
+          <button class="gmail-search-btn" onclick="searchGmail()">Search</button>
+        </div>
+        <div class="gmail-results" id="gmailResults" style="display:none;"></div>
+        <textarea class="modal-textarea" id="gmailEmailText" placeholder="Email content will appear here after selecting a result..." readonly></textarea>
+      </div>
+      <button class="generate-btn" id="generateBtn" onclick="generateSummary()">
+        Generate Summary
+      </button>
+      <div class="summary-section" id="summarySection">
+        <div class="summary-label">AI Summary â Every Detail</div>
+        <div class="summary-box" id="summaryContent"></div>
+        <div class="follow-up-edit">
+          <label>Follow-Up Text (will be saved to sheet)</label>
+          <textarea class="follow-up-input" id="followUpText" placeholder="Auto-generated follow-up will appear here. You can edit before saving."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" onclick="closeUpdateModal()">Cancel</button>
+      <button class="save-btn" id="saveBtn" onclick="saveUpdate()" disabled>Save to Sheet</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsOverlay" onclick="if(event.target===this)closeSettings()">
+  <div class="settings-modal modal">
+    <div class="modal-header">
+      <h2>Dashboard Settings</h2>
+      <button class="modal-close" onclick="closeSettings()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="settings-field">
+        <label>Google Apps Script Web App URL</label>
+        <input type="text" id="appsScriptUrl" placeholder="https://script.google.com/macros/s/...../exec" oninput="saveSettings()">
+        <div class="hint">Deploy the Apps Script as a web app and paste the URL here. See SETUP.md for instructions.</div>
+      </div>
+      <div class="settings-field">
+        <label>Connection Status</label>
+        <div id="connectionStatus"><span class="status-dot disconnected"></span> Not configured</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" onclick="closeSettings()">Close</button>
+      <button class="save-btn" onclick="testConnection()">Test Connection</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // === CONFIG ===
 const SHEETS = {
-  purchases: {
-    id: '1EFmLH_5Y-BNQ5kc05zb2fg7gmvl5iya1a43NR48Xu_4',
-    gid: '0'
-  },
-  sales: {
-    id: '10RbZNdVA07G5HPKbfMpce8RF4WDJu8BhSyjZk5kbHpY',
-    gid: '1484254259'
-  }
+  purchases: { id: '1EFmLH_5Y-BNQ5kc05zb2fg7gmvl5iya1a43NR48Xu_4', gid: '0' },
+  sales: { id: '10RbZNdVA07G5HPKbfMpce8RF4WDJu8BhSyjZk5kbHpY', gid: '1484254259' }
 };
 
 let purchaseData = [];
@@ -277,12 +376,12 @@ let currentFilter = 'all';
 let currentTab = 'purchases';
 let autoRefreshTimer = null;
 
+// Update modal state
+let updateModalState = { property: '', sheetType: '', rowIndex: -1 };
+
 // === CSV PARSER ===
 function parseCSV(text) {
-  const rows = [];
-  let row = [];
-  let field = '';
-  let inQuotes = false;
+  const rows = []; let row = []; let field = ''; let inQuotes = false;
   for (let i = 0; i < text.length; i++) {
     const c = text[i];
     if (inQuotes) {
@@ -321,8 +420,7 @@ function isDataRow(status) { const s = ns(status); return s !== '' && (ACTIVE_ST
 function isActive(s) { const n = ns(s); return ACTIVE_STATUSES.includes(n) && !n.includes('closed'); }
 
 function statusBadge(status) {
-  const s = ns(status);
-  let cls = 's-uc';
+  const s = ns(status); let cls = 's-uc';
   if (s === 'pre-marketing') cls = 's-pm';
   else if (s === 'marketing') cls = 's-mk';
   else if (s.includes('under contract to sell')) cls = 's-ucs';
@@ -422,7 +520,6 @@ const AB_PIPELINE = [
   { name: 'Cash to Close', col: 30, type: 'value' },
   { name: 'Closing', col: 21, type: 'date' }
 ];
-
 const BC_PIPELINE = [
   { name: 'Contract', col: 7, type: 'check' },
   { name: 'Buyer Intro', col: 10, type: 'check' },
@@ -437,31 +534,19 @@ const BC_PIPELINE = [
   { name: 'Closing', col: 31, type: 'check' }
 ];
 
-// Next-step action hints for A-B
 const AB_NEXT_ACTIONS = {
-  'Contract': 'Get contract filed & signed',
-  'Title Search': 'Order title search',
-  'Binder/EMD': 'Collect binder deposit / EMD',
-  'Muni': 'Order municipal search',
-  'Deed Stamps': 'Get deed stamps',
-  'Prelim HUD': 'Request preliminary HUD',
-  'Executed HUD': 'Get HUD executed — then schedule cleanout/dumpsters/pics/lockbox',
-  'Cash to Close': 'Confirm cash to close amount',
-  'Closing': 'Schedule closing date'
+  'Contract': 'Get contract filed & signed', 'Title Search': 'Order title search',
+  'Binder/EMD': 'Collect binder deposit / EMD', 'Muni': 'Order municipal search',
+  'Deed Stamps': 'Get deed stamps', 'Prelim HUD': 'Request preliminary HUD',
+  'Executed HUD': 'Get HUD executed â then schedule cleanout/dumpsters/pics/lockbox',
+  'Cash to Close': 'Confirm cash to close amount', 'Closing': 'Schedule closing date'
 };
-
-// Next-step action hints for B-C
 const BC_NEXT_ACTIONS = {
-  'Contract': 'Get B-C contract filed',
-  'Buyer Intro': 'Send buyer intro to title',
-  'EMD Due': 'Confirm EMD due date with buyer',
-  'EMD Rcvd': 'Collect EMD from buyer',
-  'Insp Period': 'Track inspection period deadline',
-  'Survey': 'Order survey',
-  'Appraisal': 'Schedule appraisal',
-  'Title': 'Confirm title clearance',
-  'Muni': 'Order municipal search',
-  'Prelim HUD': 'Request preliminary HUD',
+  'Contract': 'Get B-C contract filed', 'Buyer Intro': 'Send buyer intro to title',
+  'EMD Due': 'Confirm EMD due date with buyer', 'EMD Rcvd': 'Collect EMD from buyer',
+  'Insp Period': 'Track inspection period deadline', 'Survey': 'Order survey',
+  'Appraisal': 'Schedule appraisal', 'Title': 'Confirm title clearance',
+  'Muni': 'Order municipal search', 'Prelim HUD': 'Request preliminary HUD',
   'Closing': 'Schedule closing'
 };
 
@@ -474,24 +559,10 @@ function isStepDone(row, step) {
 }
 
 function getPipelineState(row, pipeline) {
-  const steps = pipeline.map((step, i) => ({
-    ...step,
-    done: isStepDone(row, step),
-    index: i
-  }));
-
-  // Find the first incomplete step = current step
+  const steps = pipeline.map((step, i) => ({ ...step, done: isStepDone(row, step), index: i }));
   const currentIdx = steps.findIndex(s => !s.done);
-  // If all done, current is the last step (completed)
   const allDone = currentIdx === -1;
-
-  return {
-    steps,
-    currentIdx: allDone ? steps.length : currentIdx,
-    allDone,
-    currentStep: allDone ? null : steps[currentIdx],
-    nextStep: allDone ? null : (currentIdx + 1 < steps.length ? steps[currentIdx + 1] : null)
-  };
+  return { steps, currentIdx: allDone ? steps.length : currentIdx, allDone, currentStep: allDone ? null : steps[currentIdx], nextStep: allDone ? null : (currentIdx + 1 < steps.length ? steps[currentIdx + 1] : null) };
 }
 
 function renderPipelineBar(row, pipeline) {
@@ -501,7 +572,7 @@ function renderPipelineBar(row, pipeline) {
     let cls = 'upcoming';
     if (state.steps[i].done) cls = 'done';
     else if (i === state.currentIdx) cls = 'current';
-    html += `<div class="pipeline-step ${cls}"><span class="step-tip">${state.steps[i].name}${state.steps[i].done ? ' ✓' : ''}</span></div>`;
+    html += `<div class="pipeline-step ${cls}"><span class="step-tip">${state.steps[i].name}${state.steps[i].done ? ' â' : ''}</span></div>`;
   }
   html += '</div>';
   return html;
@@ -509,9 +580,8 @@ function renderPipelineBar(row, pipeline) {
 
 function renderCurrentStep(row, pipeline, actions) {
   const state = getPipelineState(row, pipeline);
-  if (state.allDone) return '<span class="step-label" style="color:#3fb950;">✓ All Complete</span>';
-  const step = state.currentStep;
-  return `<span class="step-label step-current">▶ ${step.name}</span>`;
+  if (state.allDone) return '<span class="step-label" style="color:#3fb950;">&#10003; All Complete</span>';
+  return `<span class="step-label step-current">&#9654; ${state.currentStep.name}</span>`;
 }
 
 function renderNextAction(row, pipeline, actions) {
@@ -527,15 +597,11 @@ function renderPurchases() {
   const rows = purchaseData.filter(r => isDataRow(r[0]) && (currentFilter === 'all' ? isActive(r[0]) : true));
   const filtered = filterRows(rows, 0);
   document.getElementById('countPurchases').textContent = filtered.length;
-
-  if (filtered.length === 0) {
-    container.innerHTML = '<div class="empty-state">No matching properties found.</div>';
-    return;
-  }
+  if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">No matching properties found.</div>'; return; }
 
   let html = `<div class="section-title">A-B Purchase Side <span class="count">${filtered.length} properties</span></div>`;
   html += `<div class="action-bar">
-    <a class="action-btn" href="https://docs.google.com/spreadsheets/d/1EFmLH_5Y-BNQ5kc05zb2fg7gmvl5iya1a43NR48Xu_4/edit#gid=0" target="_blank">📄 Open A-B Sheet</a>
+    <a class="action-btn" href="https://docs.google.com/spreadsheets/d/1EFmLH_5Y-BNQ5kc05zb2fg7gmvl5iya1a43NR48Xu_4/edit#gid=0" target="_blank">&#128196; Open A-B Sheet</a>
     <div class="follow-up-count">Follow-ups needed: <strong>${countFollowUps(filtered)}</strong></div>
   </div>`;
   html += '<div class="table-wrapper"><table><thead><tr>';
@@ -544,23 +610,24 @@ function renderPurchases() {
   html += '<th>EMD</th><th>Title</th><th>Muni</th><th>HUD</th><th>Cash to Close</th>';
   html += '<th>Progress</th><th>Current Step</th><th>What\'s Next</th>';
   html += '</tr></thead><tbody>';
-
   for (const r of filtered) {
     const pc = prClass(r[22]);
     const editUrl = `https://docs.google.com/spreadsheets/d/1EFmLH_5Y-BNQ5kc05zb2fg7gmvl5iya1a43NR48Xu_4/edit#gid=0`;
+    const addr = r[1] || '';
+    const rowIdx = purchaseData.indexOf(r);
     html += `<tr class="${pc}">`;
     html += `<td>${statusBadge(r[0])}</td>`;
-    html += `<td class="pl"><div class="pl-edit"><span>${r[1] || ''}</span><a class="edit-icon" href="${editUrl}" target="_blank" title="Edit in sheet">📝</a></div></td>`;
+    html += `<td class="pl"><div class="pl-edit"><span>${addr}</span><a class="edit-icon" href="${editUrl}" target="_blank" title="Edit in sheet">&#128221;</a><button class="update-btn" onclick="openUpdateModal('${addr.replace(/'/g,"\\'")}','ab',${rowIdx})">Update</button></div></td>`;
     html += `<td class="tc">${r[2] || ''}</td>`;
     html += `<td class="fu">${r[3] || ''}</td>`;
     html += `<td class="ci">${(r[4] || '').replace(/\n/g, '<br>')}</td>`;
-    html += `<td class="mn">${r[8] ? '$' + Number(r[8].replace(/[$,]/g, '')).toLocaleString() : '—'}</td>`;
-    html += `<td class="mn">${r[10] ? '$' + Number(r[10].replace(/[$,]/g, '')).toLocaleString() : '—'}</td>`;
+    html += `<td class="mn">${r[8] ? '$' + Number(r[8].replace(/[$,]/g, '')).toLocaleString() : 'â'}</td>`;
+    html += `<td class="mn">${r[10] ? '$' + Number(r[10].replace(/[$,]/g, '')).toLocaleString() : 'â'}</td>`;
     html += `<td>${chk(r[7])}</td><td>${chk(r[16])}</td><td>${chk(r[18])}</td>`;
-    html += `<td class="${dlClass(r[21])}">${r[21] || '—'}${getDeadlineBadge(r[21])}</td>`;
-    html += `<td class="${dlClass(r[22])}">${r[22] || '—'}${getDeadlineBadge(r[22])}</td>`;
+    html += `<td class="${dlClass(r[21])}">${r[21] || 'â'}${getDeadlineBadge(r[21])}</td>`;
+    html += `<td class="${dlClass(r[22])}">${r[22] || 'â'}${getDeadlineBadge(r[22])}</td>`;
     html += `<td>${chk(r[13])}</td><td>${chk(r[14])}</td><td>${chk(r[15])}</td><td>${chk(r[17])}</td>`;
-    html += `<td>${r[30] || '—'}</td>`;
+    html += `<td>${r[30] || 'â'}</td>`;
     html += `<td>${renderPipelineBar(r, AB_PIPELINE)}</td>`;
     html += `<td>${renderCurrentStep(r, AB_PIPELINE, AB_NEXT_ACTIONS)}</td>`;
     html += `<td>${renderNextAction(r, AB_PIPELINE, AB_NEXT_ACTIONS)}</td>`;
@@ -576,15 +643,11 @@ function renderSales() {
   const rows = salesData.filter(r => isDataRow(r[0]) && (currentFilter === 'all' ? isActive(r[0]) : true));
   const filtered = filterRows(rows, 0);
   document.getElementById('countSales').textContent = filtered.length;
-
-  if (filtered.length === 0) {
-    container.innerHTML = '<div class="empty-state">No matching properties found.</div>';
-    return;
-  }
+  if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">No matching properties found.</div>'; return; }
 
   let html = `<div class="section-title">B-C Sales / Transactions <span class="count">${filtered.length} properties</span></div>`;
   html += `<div class="action-bar">
-    <a class="action-btn" href="https://docs.google.com/spreadsheets/d/10RbZNdVA07G5HPKbfMpce8RF4WDJu8BhSyjZk5kbHpY/edit#gid=1484254259" target="_blank">📄 Open B-C Sheet</a>
+    <a class="action-btn" href="https://docs.google.com/spreadsheets/d/10RbZNdVA07G5HPKbfMpce8RF4WDJu8BhSyjZk5kbHpY/edit#gid=1484254259" target="_blank">&#128196; Open B-C Sheet</a>
     <div class="follow-up-count">Follow-ups needed: <strong>${countFollowUps(filtered)}</strong></div>
   </div>`;
   html += '<div class="table-wrapper"><table><thead><tr>';
@@ -593,24 +656,25 @@ function renderSales() {
   html += '<th>Lender</th><th>EMD Due</th><th>EMD</th><th>Survey</th><th>Appraisal</th><th>Insp Period</th><th>IPR</th><th>Title</th><th>Muni</th><th>Prelim HUD</th>';
   html += '<th>Progress</th><th>Current Step</th><th>What\'s Next</th>';
   html += '</tr></thead><tbody>';
-
   for (const r of filtered) {
     const pc = prClass(r[9]);
-    const followUp = [r[5], r[6]].filter(Boolean).join(' — ');
+    const followUp = [r[5], r[6]].filter(Boolean).join(' â ');
     const editUrl = `https://docs.google.com/spreadsheets/d/10RbZNdVA07G5HPKbfMpce8RF4WDJu8BhSyjZk5kbHpY/edit#gid=1484254259`;
+    const addr = r[1] || '';
+    const rowIdx = salesData.indexOf(r);
     html += `<tr class="${pc}">`;
     html += `<td>${statusBadge(r[0])}</td>`;
-    html += `<td class="pl"><div class="pl-edit"><span>${r[1] || ''}</span><a class="edit-icon" href="${editUrl}" target="_blank" title="Edit in sheet">📝</a></div></td>`;
+    html += `<td class="pl"><div class="pl-edit"><span>${addr}</span><a class="edit-icon" href="${editUrl}" target="_blank" title="Edit in sheet">&#128221;</a><button class="update-btn" onclick="openUpdateModal('${addr.replace(/'/g,"\\'")}','bc',${rowIdx})">Update</button></div></td>`;
     html += `<td class="tc">${r[3] || ''}</td>`;
     html += `<td class="fu">${followUp || r[2] || ''}</td>`;
     html += `<td class="ci">${(r[4] || '').replace(/\n/g, '<br>')}</td>`;
-    html += `<td class="${dlClass(r[8])}">${r[8] || '—'}</td>`;
-    html += `<td class="${dlClass(r[9])}">${r[9] || '—'}${getDeadlineBadge(r[9])}</td>`;
+    html += `<td class="${dlClass(r[8])}">${r[8] || 'â'}</td>`;
+    html += `<td class="${dlClass(r[9])}">${r[9] || 'â'}${getDeadlineBadge(r[9])}</td>`;
     html += `<td>${chk(r[10])}</td><td>${chk(r[11])}</td><td>${chk(r[12])}</td>`;
-    html += `<td class="tc">${r[17] || '—'}</td>`;
-    html += `<td class="${dlClass(r[24])}">${r[24] || '—'}${getDeadlineBadge(r[24])}</td>`;
+    html += `<td class="tc">${r[17] || 'â'}</td>`;
+    html += `<td class="${dlClass(r[24])}">${r[24] || 'â'}${getDeadlineBadge(r[24])}</td>`;
     html += `<td>${chk(r[25])}</td><td>${chk(r[18])}</td><td>${chk(r[19])}</td>`;
-    html += `<td class="${dlClass(r[22])}">${r[22] || '—'}</td>`;
+    html += `<td class="${dlClass(r[22])}">${r[22] || 'â'}</td>`;
     html += `<td>${chk(r[26])}</td><td>${chk(r[27])}</td><td>${chk(r[28])}</td><td>${chk(r[29])}</td>`;
     html += `<td>${renderPipelineBar(r, BC_PIPELINE)}</td>`;
     html += `<td>${renderCurrentStep(r, BC_PIPELINE, BC_NEXT_ACTIONS)}</td>`;
@@ -633,16 +697,8 @@ function filterRows(rows, statusCol) {
   if (q) f = f.filter(r => r.join(' ').toLowerCase().includes(q));
   return f;
 }
-
-function setFilter(f, el) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  render();
-}
-
+function setFilter(f, el) { currentFilter = f; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); render(); }
 function doFilter() { render(); }
-
 function showTab(tab, el) {
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -655,36 +711,22 @@ function showTab(tab, el) {
 function toggleQ2() {
   const body = document.getElementById('q2Body');
   const toggle = document.getElementById('q2Toggle');
-  if (body.style.display === 'none') {
-    body.style.display = 'block';
-    toggle.classList.remove('collapsed');
-  } else {
-    body.style.display = 'none';
-    toggle.classList.add('collapsed');
-  }
+  if (body.style.display === 'none') { body.style.display = 'block'; toggle.classList.remove('collapsed'); }
+  else { body.style.display = 'none'; toggle.classList.add('collapsed'); }
 }
 
 function updateQ2Metrics() {
   const active = purchaseData.filter(r => isDataRow(r[0]) && isActive(r[0]));
   if (active.length === 0) return;
-
-  // === PAYOUT TRACKER: Executed HUD (col 18) + Pre-closing game plan (col 31 has content) ===
-  let payoutDone = 0;
-  let payoutHTML = '';
+  let payoutDone = 0, payoutHTML = '';
   for (const r of active) {
     const addr = r[1] || 'Unknown';
-    const hudVal = (r[18] || '').trim().toUpperCase();
-    const hudOK = hudVal === 'TRUE' || hudVal === 'YES';
+    const hudOK = (r[18] || '').trim().toUpperCase() === 'TRUE' || (r[18] || '').trim().toUpperCase() === 'YES';
     const planVal = (r[31] || '').trim();
     const planOK = planVal !== '' && planVal.toUpperCase() !== 'FALSE' && planVal.toUpperCase() !== 'NO';
-    const complete = hudOK && planOK;
-    if (complete) payoutDone++;
-
-    const hudIcon = hudOK ? '<span class="q2-done">✓ HUD</span>' : '<span class="q2-miss">✗ HUD</span>';
-    const planIcon = planOK ? '<span class="q2-done">✓ Plan</span>' : '<span class="q2-miss">✗ Plan</span>';
-    payoutHTML += `<div class="q2-item"><span class="q2-prop">${addr}</span><span>${hudIcon} ${planIcon}</span></div>`;
+    if (hudOK && planOK) payoutDone++;
+    payoutHTML += `<div class="q2-item"><span class="q2-prop">${addr}</span><span>${hudOK ? '<span class="q2-done">â HUD</span>' : '<span class="q2-miss">â HUD</span>'} ${planOK ? '<span class="q2-done">â Plan</span>' : '<span class="q2-miss">â Plan</span>'}</span></div>`;
   }
-
   const payoutPct = Math.round((payoutDone / active.length) * 100);
   const payoutClass = payoutPct >= 80 ? 'good' : payoutPct >= 50 ? 'warn' : 'bad';
   document.getElementById('q2PayoutScore').textContent = `${payoutDone}/${active.length} (${payoutPct}%)`;
@@ -693,19 +735,13 @@ function updateQ2Metrics() {
   document.getElementById('q2PayoutBar').className = `q2-bar-fill ${payoutClass}`;
   document.getElementById('q2PayoutList').innerHTML = payoutHTML;
 
-  // === DR228: Deed Stamps column (col 16) ===
-  let dr228Done = 0;
-  let dr228HTML = '';
+  let dr228Done = 0, dr228HTML = '';
   for (const r of active) {
     const addr = r[1] || 'Unknown';
-    const dsVal = (r[16] || '').trim().toUpperCase();
-    const dsOK = dsVal === 'TRUE' || dsVal === 'YES';
+    const dsOK = (r[16] || '').trim().toUpperCase() === 'TRUE' || (r[16] || '').trim().toUpperCase() === 'YES';
     if (dsOK) dr228Done++;
-
-    const icon = dsOK ? '<span class="q2-done">✓ Filed</span>' : '<span class="q2-miss">✗ Not Filed</span>';
-    dr228HTML += `<div class="q2-item"><span class="q2-prop">${addr}</span><span>${icon}</span></div>`;
+    dr228HTML += `<div class="q2-item"><span class="q2-prop">${addr}</span><span>${dsOK ? '<span class="q2-done">â Filed</span>' : '<span class="q2-miss">â Not Filed</span>'}</span></div>`;
   }
-
   const dr228Pct = Math.round((dr228Done / active.length) * 100);
   const dr228Class = dr228Pct >= 80 ? 'good' : dr228Pct >= 50 ? 'warn' : 'bad';
   document.getElementById('q2DR228Score').textContent = `${dr228Done}/${active.length} (${dr228Pct}%)`;
@@ -726,8 +762,6 @@ function updateStats() {
   document.getElementById('statPM').textContent = allP.filter(r => ns(r[0]) === 'pre-marketing').length;
   document.getElementById('statUrgent').textContent = countClosingThisWeek();
   document.getElementById('statDone').textContent = purchaseData.filter(r => ns(r[0]) === 'complete').length + salesData.filter(r => ns(r[0]) === 'complete').length;
-
-  // Q2 stat cards
   const activeP = purchaseData.filter(r => isDataRow(r[0]) && isActive(r[0]));
   if (activeP.length > 0) {
     let payC = 0, drC = 0;
@@ -759,93 +793,276 @@ function showToast(msg) {
 
 // === AUTO REFRESH ===
 function toggleAutoRefresh() {
-  if (document.getElementById('autoRefresh').checked) {
-    startAutoRefresh();
-  } else {
-    if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
-  }
+  if (document.getElementById('autoRefresh').checked) { startAutoRefresh(); }
+  else { if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; } }
 }
-
 function startAutoRefresh() {
   if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-  autoRefreshTimer = setInterval(() => {
-    loadAllData(true);
-  }, 5 * 60 * 1000);
+  autoRefreshTimer = setInterval(() => { loadAllData(true); }, 5 * 60 * 1000);
 }
 
 // === MAIN LOAD ===
 async function loadAllData(silent) {
   const btn = document.getElementById('refreshBtn');
-  btn.classList.add('loading');
-  btn.textContent = 'Loading...';
+  btn.classList.add('loading'); btn.textContent = 'Loading...';
   if (!silent) document.getElementById('lastUpdated').textContent = 'Refreshing...';
-
   try {
     const [pCSV, sCSV] = await Promise.all([
       fetchSheet(SHEETS.purchases.id, SHEETS.purchases.gid),
       fetchSheet(SHEETS.sales.id, SHEETS.sales.gid)
     ]);
-
-    const pRows = parseCSV(pCSV);
-    const sRows = parseCSV(sCSV);
-
-    purchaseData = pRows.slice(1);
-    salesData = sRows.slice(1);
-
-    render();
-    updateStats();
-
+    purchaseData = parseCSV(pCSV).slice(1);
+    salesData = parseCSV(sCSV).slice(1);
+    render(); updateStats();
     const now = new Date();
-    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    document.getElementById('lastUpdated').textContent = `Live — ${timeStr}`;
+    document.getElementById('lastUpdated').textContent = `Live â ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     if (silent) showToast('Dashboard refreshed');
-
   } catch (err) {
-    const msg = err.message || String(err);
     document.getElementById('tab-purchases').innerHTML = `
       <div class="error">
         <div style="font-size:40px;margin-bottom:12px;">&#9888;</div>
         <div style="font-size:16px;font-weight:600;margin-bottom:16px;">Could not load sheet data</div>
         <div class="steps">
           <p style="margin-bottom:12px;">The Google Sheets need to be <strong>published to the web</strong> for this dashboard to work:</p>
-          <ol>
-            <li>Open each Google Sheet</li>
-            <li>Go to <strong>File > Share > Publish to the web</strong></li>
-            <li>Select the correct tab and choose <strong>CSV</strong></li>
-            <li>Click <strong>Publish</strong></li>
-            <li>Come back here and click <strong>Refresh</strong></li>
-          </ol>
-          <p style="margin-top:16px;color:#8b949e;">Error: ${msg}</p>
+          <ol><li>Open each Google Sheet</li><li>Go to <strong>File &gt; Share &gt; Publish to the web</strong></li><li>Select the correct tab and choose <strong>CSV</strong></li><li>Click <strong>Publish</strong></li><li>Come back here and click <strong>Refresh</strong></li></ol>
+          <p style="margin-top:16px;color:#8b949e;">Error: ${err.message || err}</p>
         </div>
       </div>`;
     document.getElementById('lastUpdated').textContent = 'Error loading data';
   }
+  btn.classList.remove('loading'); btn.textContent = 'Refresh';
+}
 
-  btn.classList.remove('loading');
-  btn.textContent = 'Refresh';
+// =============================================
+// === UPDATE MODAL FEATURE ===
+// =============================================
+
+function getAppsScriptUrl() {
+  return localStorage.getItem('cg_apps_script_url') || '';
+}
+
+function openUpdateModal(property, sheetType, rowIndex) {
+  updateModalState = { property, sheetType, rowIndex };
+  document.getElementById('updateModalProp').textContent = property + (sheetType === 'ab' ? ' (A-B Purchase)' : ' (B-C Sale)');
+  document.getElementById('emailTextInput').value = '';
+  document.getElementById('gmailEmailText').value = '';
+  document.getElementById('gmailSearchQuery').value = property;
+  document.getElementById('summarySection').classList.remove('visible');
+  document.getElementById('summaryContent').innerHTML = '';
+  document.getElementById('followUpText').value = '';
+  document.getElementById('saveBtn').disabled = true;
+  document.getElementById('generateBtn').disabled = false;
+  document.getElementById('generateBtn').innerHTML = 'Generate Summary';
+  switchInputTab('paste', document.querySelector('.modal-tab'));
+  document.getElementById('updateModalOverlay').classList.add('active');
+}
+
+function closeUpdateModal() {
+  document.getElementById('updateModalOverlay').classList.remove('active');
+}
+
+function switchInputTab(tab, el) {
+  document.querySelectorAll('#updateModalOverlay .modal-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('inputPaste').style.display = tab === 'paste' ? 'block' : 'none';
+  document.getElementById('inputGmail').style.display = tab === 'gmail' ? 'block' : 'none';
+}
+
+async function searchGmail() {
+  const query = document.getElementById('gmailSearchQuery').value.trim();
+  if (!query) return;
+  const resultsDiv = document.getElementById('gmailResults');
+  resultsDiv.style.display = 'block';
+  resultsDiv.innerHTML = '<div style="padding:12px;color:#8b949e;text-align:center;">Searching Gmail...</div>';
+
+  const url = getAppsScriptUrl();
+  if (!url) {
+    resultsDiv.innerHTML = '<div style="padding:12px;color:#f85149;text-align:center;">Apps Script URL not configured. Go to Settings first.</div>';
+    return;
+  }
+
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'searchGmail', query: query })
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+    if (!data.results || data.results.length === 0) {
+      resultsDiv.innerHTML = '<div style="padding:12px;color:#8b949e;text-align:center;">No emails found.</div>';
+      return;
+    }
+    let html = '';
+    for (const r of data.results) {
+      html += `<div class="gmail-result-item" onclick="selectGmailResult('${r.id}')">
+        <div class="gmail-result-subject">${r.subject || '(no subject)'}</div>
+        <div class="gmail-result-from">${r.from || ''} â ${r.date || ''}</div>
+        <div class="gmail-result-snippet">${r.snippet || ''}</div>
+      </div>`;
+    }
+    resultsDiv.innerHTML = html;
+  } catch (err) {
+    resultsDiv.innerHTML = `<div style="padding:12px;color:#f85149;text-align:center;">Error: ${err.message}</div>`;
+  }
+}
+
+async function selectGmailResult(messageId) {
+  const url = getAppsScriptUrl();
+  document.getElementById('gmailEmailText').value = 'Loading email...';
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'getEmail', messageId: messageId })
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+    document.getElementById('gmailEmailText').value = data.body || 'No content found.';
+  } catch (err) {
+    document.getElementById('gmailEmailText').value = 'Error loading email: ' + err.message;
+  }
+}
+
+async function generateSummary() {
+  const pasteTab = document.getElementById('inputPaste').style.display !== 'none';
+  const emailText = pasteTab
+    ? document.getElementById('emailTextInput').value.trim()
+    : document.getElementById('gmailEmailText').value.trim();
+
+  if (!emailText) { alert('Please paste or select an email first.'); return; }
+
+  const url = getAppsScriptUrl();
+  if (!url) { alert('Apps Script URL not configured. Click the gear icon in the header to set it up.'); return; }
+
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="btn-spinner"></span> Generating...';
+
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action: 'summarize',
+        emailText: emailText,
+        property: updateModalState.property,
+        sheetType: updateModalState.sheetType
+      })
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+
+    document.getElementById('summaryContent').innerHTML = data.summary || 'No summary generated.';
+    document.getElementById('followUpText').value = data.followUp || '';
+    document.getElementById('summarySection').classList.add('visible');
+    document.getElementById('saveBtn').disabled = false;
+  } catch (err) {
+    alert('Error generating summary: ' + err.message);
+  }
+  btn.disabled = false;
+  btn.innerHTML = 'Generate Summary';
+}
+
+async function saveUpdate() {
+  const url = getAppsScriptUrl();
+  if (!url) { alert('Apps Script URL not configured.'); return; }
+
+  const followUp = document.getElementById('followUpText').value.trim();
+  if (!followUp) { alert('Follow-up text is empty.'); return; }
+
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action: 'update',
+        property: updateModalState.property,
+        followUp: followUp,
+        sheetType: updateModalState.sheetType
+      })
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+
+    // Update local data immediately
+    if (updateModalState.sheetType === 'ab' && updateModalState.rowIndex >= 0) {
+      purchaseData[updateModalState.rowIndex][3] = followUp;
+    } else if (updateModalState.sheetType === 'bc' && updateModalState.rowIndex >= 0) {
+      salesData[updateModalState.rowIndex][5] = followUp;
+    }
+    render();
+    closeUpdateModal();
+    showToast('Follow-up updated for ' + updateModalState.property);
+  } catch (err) {
+    alert('Error saving: ' + err.message);
+  }
+  btn.disabled = false; btn.textContent = 'Save to Sheet';
+}
+
+// === SETTINGS ===
+function openSettings() {
+  document.getElementById('appsScriptUrl').value = getAppsScriptUrl();
+  updateConnectionStatus();
+  document.getElementById('settingsOverlay').classList.add('active');
+}
+function closeSettings() {
+  document.getElementById('settingsOverlay').classList.remove('active');
+}
+function saveSettings() {
+  localStorage.setItem('cg_apps_script_url', document.getElementById('appsScriptUrl').value.trim());
+  updateConnectionStatus();
+}
+function updateConnectionStatus() {
+  const url = getAppsScriptUrl();
+  const el = document.getElementById('connectionStatus');
+  if (url) {
+    el.innerHTML = '<span class="status-dot connected"></span> URL configured';
+  } else {
+    el.innerHTML = '<span class="status-dot disconnected"></span> Not configured';
+  }
+}
+async function testConnection() {
+  const url = getAppsScriptUrl();
+  if (!url) { alert('Please enter the Apps Script URL first.'); return; }
+  const el = document.getElementById('connectionStatus');
+  el.innerHTML = '<span class="status-dot disconnected"></span> Testing...';
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'ping' })
+    });
+    const data = await resp.json();
+    if (data.status === 'ok') {
+      el.innerHTML = '<span class="status-dot connected"></span> Connected successfully!';
+      showToast('Apps Script connection verified');
+    } else {
+      throw new Error(data.error || 'Unknown error');
+    }
+  } catch (err) {
+    el.innerHTML = `<span class="status-dot disconnected"></span> Failed: ${err.message}`;
+  }
 }
 
 // === KEYBOARD SHORTCUTS ===
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'r' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') {
-    loadAllData();
+  if (document.querySelector('.modal-overlay.active')) {
+    if (e.key === 'Escape') { closeUpdateModal(); closeSettings(); }
+    return;
   }
-  if (e.key === '1' && document.activeElement.tagName !== 'INPUT') {
-    document.querySelectorAll('.tab')[0].click();
-  }
-  if (e.key === '2' && document.activeElement.tagName !== 'INPUT') {
-    document.querySelectorAll('.tab')[1].click();
-  }
-  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
-    e.preventDefault();
-    document.getElementById('searchBox').focus();
-  }
+  if (e.key === 'r' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') loadAllData();
+  if (e.key === '1' && document.activeElement.tagName !== 'INPUT') document.querySelectorAll('.tab')[0].click();
+  if (e.key === '2' && document.activeElement.tagName !== 'INPUT') document.querySelectorAll('.tab')[1].click();
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); document.getElementById('searchBox').focus(); }
 });
 
 // Boot
 loadAllData();
 if (document.getElementById('autoRefresh').checked) startAutoRefresh();
 </script>
-
 </body>
 </html>
