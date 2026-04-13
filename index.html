@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CashGeeks TC Dashboard</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð°</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e1e4e8; min-height: 100vh; }
@@ -220,7 +220,7 @@ tbody tr:hover { background: #161b22; }
 <div class="header">
   <div>
     <h1><span class="logo">CG</span> CashGeeks TC Dashboard</h1>
-    <div class="subtitle">Regency Litho Assets LLC â Live Transaction Tracker</div>
+    <div class="subtitle">Regency Litho Assets LLC — Live Transaction Tracker</div>
   </div>
   <div class="header-right">
     <button class="settings-btn" onclick="openSettings()" title="Settings">&#9881;</button>
@@ -233,32 +233,32 @@ tbody tr:hover { background: #161b22; }
 </div>
 
 <div class="stats-bar" id="statsBar">
-  <div class="stat-card"><div class="label">Total Active</div><div class="value blue" id="statActive">â</div></div>
-  <div class="stat-card"><div class="label">Under Contract</div><div class="value green" id="statUC">â</div></div>
-  <div class="stat-card"><div class="label">Pre-Marketing</div><div class="value yellow" id="statPM">â</div></div>
-  <div class="stat-card"><div class="label">Closing This Week</div><div class="value red" id="statUrgent">â</div></div>
-  <div class="stat-card"><div class="label">Completed</div><div class="value" style="color:#8b949e" id="statDone">â</div></div>
-  <div class="stat-card" style="border-color:#d2a8ff40"><div class="label" style="color:#d2a8ff">Payout Tracker</div><div class="value" id="statPayout">â</div></div>
-  <div class="stat-card" style="border-color:#d2a8ff40"><div class="label" style="color:#d2a8ff">DR228 Filed</div><div class="value" id="statDR228">â</div></div>
+  <div class="stat-card"><div class="label">Total Active</div><div class="value blue" id="statActive">—</div></div>
+  <div class="stat-card"><div class="label">Under Contract</div><div class="value green" id="statUC">—</div></div>
+  <div class="stat-card"><div class="label">Pre-Marketing</div><div class="value yellow" id="statPM">—</div></div>
+  <div class="stat-card"><div class="label">Closing This Week</div><div class="value red" id="statUrgent">—</div></div>
+  <div class="stat-card"><div class="label">Completed</div><div class="value" style="color:#8b949e" id="statDone">—</div></div>
+  <div class="stat-card" style="border-color:#d2a8ff40"><div class="label" style="color:#d2a8ff">Payout Tracker</div><div class="value" id="statPayout">—</div></div>
+  <div class="stat-card" style="border-color:#d2a8ff40"><div class="label" style="color:#d2a8ff">DR228 Filed</div><div class="value" id="statDR228">—</div></div>
 </div>
 
 <div class="q2-metrics" id="q2Section">
   <div class="q2-header" onclick="toggleQ2()">
-    <span class="toggle" id="q2Toggle">&#9660;</span> Q2 Personal Metrics â Matt
+    <span class="toggle" id="q2Toggle">&#9660;</span> Q2 Personal Metrics — Matt
   </div>
   <div id="q2Body">
     <div class="q2-grid">
       <div class="q2-card">
         <div class="q2-card-title">Payout Tracker Completion</div>
         <div class="q2-card-sub">Executed HUD received + Pre-closing game plan documented</div>
-        <div class="q2-score" id="q2PayoutScore">â</div>
+        <div class="q2-score" id="q2PayoutScore">—</div>
         <div class="q2-bar-bg"><div class="q2-bar-fill" id="q2PayoutBar" style="width:0%"></div></div>
         <div class="q2-list" id="q2PayoutList"></div>
       </div>
       <div class="q2-card">
-        <div class="q2-card-title">DR228 Deed Stamps â Not Recorded</div>
-        <div class="q2-card-sub">DR228 filled out &amp; sent to title â title reports to Dept of Revenue</div>
-        <div class="q2-score" id="q2DR228Score">â</div>
+        <div class="q2-card-title">DR228 Deed Stamps — Not Recorded</div>
+        <div class="q2-card-sub">DR228 filled out &amp; sent to title — title reports to Dept of Revenue</div>
+        <div class="q2-score" id="q2DR228Score">—</div>
         <div class="q2-bar-bg"><div class="q2-bar-fill" id="q2DR228Bar" style="width:0%"></div></div>
         <div class="q2-list" id="q2DR228List"></div>
       </div>
@@ -323,7 +323,7 @@ tbody tr:hover { background: #161b22; }
         Generate Summary
       </button>
       <div class="summary-section" id="summarySection">
-        <div class="summary-label">AI Summary â Every Detail</div>
+        <div class="summary-label">AI Summary — Every Detail</div>
         <div class="summary-box" id="summaryContent"></div>
         <div class="follow-up-edit">
           <label>Follow-Up Text (will be saved to sheet)</label>
@@ -538,7 +538,7 @@ const AB_NEXT_ACTIONS = {
   'Contract': 'Get contract filed & signed', 'Title Search': 'Order title search',
   'Binder/EMD': 'Collect binder deposit / EMD', 'Muni': 'Order municipal search',
   'Deed Stamps': 'Get deed stamps', 'Prelim HUD': 'Request preliminary HUD',
-  'Executed HUD': 'Get HUD executed â then schedule cleanout/dumpsters/pics/lockbox',
+  'Executed HUD': 'Get HUD executed — then schedule cleanout/dumpsters/pics/lockbox',
   'Cash to Close': 'Confirm cash to close amount', 'Closing': 'Schedule closing date'
 };
 const BC_NEXT_ACTIONS = {
@@ -572,7 +572,7 @@ function renderPipelineBar(row, pipeline) {
     let cls = 'upcoming';
     if (state.steps[i].done) cls = 'done';
     else if (i === state.currentIdx) cls = 'current';
-    html += `<div class="pipeline-step ${cls}"><span class="step-tip">${state.steps[i].name}${state.steps[i].done ? ' â' : ''}</span></div>`;
+    html += `<div class="pipeline-step ${cls}"><span class="step-tip">${state.steps[i].name}${state.steps[i].done ? ' ✓' : ''}</span></div>`;
   }
   html += '</div>';
   return html;
@@ -621,13 +621,13 @@ function renderPurchases() {
     html += `<td class="tc">${r[2] || ''}</td>`;
     html += `<td class="fu">${r[3] || ''}</td>`;
     html += `<td class="ci">${(r[4] || '').replace(/\n/g, '<br>')}</td>`;
-    html += `<td class="mn">${r[8] ? '$' + Number(r[8].replace(/[$,]/g, '')).toLocaleString() : 'â'}</td>`;
-    html += `<td class="mn">${r[10] ? '$' + Number(r[10].replace(/[$,]/g, '')).toLocaleString() : 'â'}</td>`;
+    html += `<td class="mn">${r[8] ? '$' + Number(r[8].replace(/[$,]/g, '')).toLocaleString() : '—'}</td>`;
+    html += `<td class="mn">${r[10] ? '$' + Number(r[10].replace(/[$,]/g, '')).toLocaleString() : '—'}</td>`;
     html += `<td>${chk(r[7])}</td><td>${chk(r[16])}</td><td>${chk(r[18])}</td>`;
-    html += `<td class="${dlClass(r[21])}">${r[21] || 'â'}${getDeadlineBadge(r[21])}</td>`;
-    html += `<td class="${dlClass(r[22])}">${r[22] || 'â'}${getDeadlineBadge(r[22])}</td>`;
+    html += `<td class="${dlClass(r[21])}">${r[21] || '—'}${getDeadlineBadge(r[21])}</td>`;
+    html += `<td class="${dlClass(r[22])}">${r[22] || '—'}${getDeadlineBadge(r[22])}</td>`;
     html += `<td>${chk(r[13])}</td><td>${chk(r[14])}</td><td>${chk(r[15])}</td><td>${chk(r[17])}</td>`;
-    html += `<td>${r[30] || 'â'}</td>`;
+    html += `<td>${r[30] || '—'}</td>`;
     html += `<td>${renderPipelineBar(r, AB_PIPELINE)}</td>`;
     html += `<td>${renderCurrentStep(r, AB_PIPELINE, AB_NEXT_ACTIONS)}</td>`;
     html += `<td>${renderNextAction(r, AB_PIPELINE, AB_NEXT_ACTIONS)}</td>`;
@@ -658,7 +658,7 @@ function renderSales() {
   html += '</tr></thead><tbody>';
   for (const r of filtered) {
     const pc = prClass(r[9]);
-    const followUp = [r[5], r[6]].filter(Boolean).join(' â ');
+    const followUp = [r[5], r[6]].filter(Boolean).join(' — ');
     const editUrl = `https://docs.google.com/spreadsheets/d/10RbZNdVA07G5HPKbfMpce8RF4WDJu8BhSyjZk5kbHpY/edit#gid=1484254259`;
     const addr = r[1] || '';
     const rowIdx = salesData.indexOf(r);
@@ -668,13 +668,13 @@ function renderSales() {
     html += `<td class="tc">${r[3] || ''}</td>`;
     html += `<td class="fu">${followUp || r[2] || ''}</td>`;
     html += `<td class="ci">${(r[4] || '').replace(/\n/g, '<br>')}</td>`;
-    html += `<td class="${dlClass(r[8])}">${r[8] || 'â'}</td>`;
-    html += `<td class="${dlClass(r[9])}">${r[9] || 'â'}${getDeadlineBadge(r[9])}</td>`;
+    html += `<td class="${dlClass(r[8])}">${r[8] || '—'}</td>`;
+    html += `<td class="${dlClass(r[9])}">${r[9] || '—'}${getDeadlineBadge(r[9])}</td>`;
     html += `<td>${chk(r[10])}</td><td>${chk(r[11])}</td><td>${chk(r[12])}</td>`;
-    html += `<td class="tc">${r[17] || 'â'}</td>`;
-    html += `<td class="${dlClass(r[24])}">${r[24] || 'â'}${getDeadlineBadge(r[24])}</td>`;
+    html += `<td class="tc">${r[17] || '—'}</td>`;
+    html += `<td class="${dlClass(r[24])}">${r[24] || '—'}${getDeadlineBadge(r[24])}</td>`;
     html += `<td>${chk(r[25])}</td><td>${chk(r[18])}</td><td>${chk(r[19])}</td>`;
-    html += `<td class="${dlClass(r[22])}">${r[22] || 'â'}</td>`;
+    html += `<td class="${dlClass(r[22])}">${r[22] || '—'}</td>`;
     html += `<td>${chk(r[26])}</td><td>${chk(r[27])}</td><td>${chk(r[28])}</td><td>${chk(r[29])}</td>`;
     html += `<td>${renderPipelineBar(r, BC_PIPELINE)}</td>`;
     html += `<td>${renderCurrentStep(r, BC_PIPELINE, BC_NEXT_ACTIONS)}</td>`;
@@ -725,7 +725,7 @@ function updateQ2Metrics() {
     const planVal = (r[31] || '').trim();
     const planOK = planVal !== '' && planVal.toUpperCase() !== 'FALSE' && planVal.toUpperCase() !== 'NO';
     if (hudOK && planOK) payoutDone++;
-    payoutHTML += `<div class="q2-item"><span class="q2-prop">${addr}</span><span>${hudOK ? '<span class="q2-done">â HUD</span>' : '<span class="q2-miss">â HUD</span>'} ${planOK ? '<span class="q2-done">â Plan</span>' : '<span class="q2-miss">â Plan</span>'}</span></div>`;
+    payoutHTML += `<div class="q2-item"><span class="q2-prop">${addr}</span><span>${hudOK ? '<span class="q2-done">✓ HUD</span>' : '<span class="q2-miss">✗ HUD</span>'} ${planOK ? '<span class="q2-done">✓ Plan</span>' : '<span class="q2-miss">✗ Plan</span>'}</span></div>`;
   }
   const payoutPct = Math.round((payoutDone / active.length) * 100);
   const payoutClass = payoutPct >= 80 ? 'good' : payoutPct >= 50 ? 'warn' : 'bad';
@@ -740,7 +740,7 @@ function updateQ2Metrics() {
     const addr = r[1] || 'Unknown';
     const dsOK = (r[16] || '').trim().toUpperCase() === 'TRUE' || (r[16] || '').trim().toUpperCase() === 'YES';
     if (dsOK) dr228Done++;
-    dr228HTML += `<div class="q2-item"><span class="q2-prop">${addr}</span><span>${dsOK ? '<span class="q2-done">â Filed</span>' : '<span class="q2-miss">â Not Filed</span>'}</span></div>`;
+    dr228HTML += `<div class="q2-item"><span class="q2-prop">${addr}</span><span>${dsOK ? '<span class="q2-done">✓ Filed</span>' : '<span class="q2-miss">✗ Not Filed</span>'}</span></div>`;
   }
   const dr228Pct = Math.round((dr228Done / active.length) * 100);
   const dr228Class = dr228Pct >= 80 ? 'good' : dr228Pct >= 50 ? 'warn' : 'bad';
@@ -815,7 +815,7 @@ async function loadAllData(silent) {
     salesData = parseCSV(sCSV).slice(1);
     render(); updateStats();
     const now = new Date();
-    document.getElementById('lastUpdated').textContent = `Live â ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    document.getElementById('lastUpdated').textContent = `Live — ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     if (silent) showToast('Dashboard refreshed');
   } catch (err) {
     document.getElementById('tab-purchases').innerHTML = `
@@ -897,7 +897,7 @@ async function searchGmail() {
     for (const r of data.results) {
       html += `<div class="gmail-result-item" onclick="selectGmailResult('${r.id}')">
         <div class="gmail-result-subject">${r.subject || '(no subject)'}</div>
-        <div class="gmail-result-from">${r.from || ''} â ${r.date || ''}</div>
+        <div class="gmail-result-from">${r.from || ''} — ${r.date || ''}</div>
         <div class="gmail-result-snippet">${r.snippet || ''}</div>
       </div>`;
     }
